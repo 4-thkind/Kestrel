@@ -1,0 +1,814 @@
+# Kestrel
+
+**The operating system for India's streets.**
+
+Every citizen becomes a sensor, every phone a road scanner. Kestrel turns scattered complaints about potholes, garbage dumps, dark streetlights, open manholes and waterlogged roads into **one verified, ranked, publicly tracked issue per problem**, and it keeps riders away from those hazards while the city fixes them.
+
+> Kestrels hover over roadsides and watch everything below. That is the idea: eyes on every street, and nothing reported goes unseen.
+
+**Hackathon:** Build for Bharat, **Track 5: Smarter Cities and Civic Infrastructure**
+**Problem prompt:** *Real-Time Civic Issue Reporting and Resolution Tracking*
+**Live demo:** _coming soon_ · **Demo video:** _coming soon_
+
+---
+
+## Contents
+
+1. [The problem](#1-the-problem)
+2. [Who we build for](#2-who-we-build-for)
+3. [Why existing solutions fall short](#3-why-existing-solutions-fall-short)
+4. [What Kestrel does](#4-what-kestrel-does)
+5. [The 60-second story](#5-the-60-second-story)
+6. [How it works](#6-how-it-works)
+7. [Issue categories](#7-issue-categories)
+8. [Duplicate fusion](#8-duplicate-fusion)
+9. [Community verification and severity](#9-community-verification-and-severity)
+10. [Public resolution tracking](#10-public-resolution-tracking)
+11. [Ward officer console](#11-ward-officer-console)
+12. [Hazard-aware routing](#12-hazard-aware-routing)
+13. [Edge AI road vision](#13-edge-ai-road-vision)
+14. [Built for Bharat](#14-built-for-bharat)
+15. [Architecture](#15-architecture)
+16. [Data model](#16-data-model)
+17. [API](#17-api)
+18. [Trust, safety and privacy](#18-trust-safety-and-privacy)
+19. [Run it locally](#19-run-it-locally)
+20. [Deploy](#20-deploy)
+21. [Tests](#21-tests)
+22. [Configuration](#22-configuration)
+23. [Repository layout](#23-repository-layout)
+24. [Build status and roadmap](#24-build-status-and-roadmap)
+25. [Value and adoption](#25-value-and-adoption)
+26. [How Kestrel maps to the judging criteria](#26-how-kestrel-maps-to-the-judging-criteria)
+
+**Status legend used in this README:** ✅ working and tested in this repo · 🔨 being built for the hackathon · 🧭 after the hackathon
+
+---
+
+## 1. The problem
+
+A pothole on a Delhi road is usually not a secret. Dozens of people ride over it every hour. Some of them complain. The complaint goes into a portal, a helpline or a social media post, and from there it disappears.
+
+What breaks is not reporting. It is everything after reporting:
+
+- **Complaints do not add up.** Twenty people report the same pothole and the system sees twenty unrelated tickets, or twenty tickets that each get closed on their own. Nobody can tell that this one hole is the worst on the street.
+- **Severity is invisible.** An open manhole next to a school and a faded road marking sit in the same queue. Officers triage by whoever shouts loudest.
+- **Response is opaque.** Citizens get a ticket number and silence. "Closed" often means the ticket was closed, not that the road was fixed.
+- **Ownership is fragmented.** One street can involve the municipal corporation, the public works department, the water utility, the power distribution company and the traffic police. Citizens do not know who owns which problem, and complaints land at the wrong desk.
+- **The danger is live, the fix is slow.** Even a well-run repair takes days. Meanwhile riders keep hitting the same hazard, at night and in the rain, because their navigation app knows traffic but nothing about the road surface.
+
+## 2. Who we build for
+
+| Person | Today | What Kestrel gives them |
+|---|---|---|
+| **Daily commuter / two-wheeler rider** | Hits the same potholes and flooded underpasses every week. Has stopped complaining because nothing happens. | Report in 10 seconds by voice in Hindi, English or Hinglish. See that others reported it too. Get routed around it while it is open. |
+| **Resident / RWA volunteer** | Follows up by phone, WhatsApp groups and repeated complaints. | One public page per issue with a timeline they can share, and a vote that actually changes priority. |
+| **Ward officer / junior engineer** | Gets a flood of duplicate, vague, unlocated complaints with no priority. | One deduplicated queue per ward, ranked by severity, with photos, location, report count and a deadline. |
+| **Civic body leadership** | Measures ticket closure, not road condition. | Ward scorecards built from citizen-confirmed fixes, time-to-fix and reopen rates. |
+
+## 3. Why existing solutions fall short
+
+Government grievance portals, municipal helpline apps and social media complaints all exist. They share the same gaps:
+
+| Gap | What happens today | What Kestrel does differently |
+|---|---|---|
+| **Duplicates** | Every complaint is its own ticket | Nearby same-category reports fuse into one issue with a report count |
+| **No severity signal** | First come, first served | Transparent severity score from category, community confirmations, photos, exposure and age |
+| **Self-certified closure** | The department closes its own ticket | A fix is "resolved" by the officer but only "closed" when citizens confirm it, and "still there" votes reopen it |
+| **Opaque progress** | A ticket number | A public issue page with every state change, who owns it and how long it has been open |
+| **Wrong desk** | Citizen guesses the department | Category and road ownership suggest the responsible agency |
+| **No benefit for the reporter** | Reporting is pure civic duty | Reporting also protects you: open hazards are avoided by Kestrel's routing |
+| **Built for English-literate desktop users** | Long forms | Voice in Hindi, English and Hinglish, works offline, built for 360 px screens and weak networks |
+
+## 4. What Kestrel does
+
+```mermaid
+flowchart LR
+  subgraph Citizens
+    R1["Report<br/>voice / text / photo"]
+    R2["Verify<br/>still there / fixed"]
+    R3["Ride<br/>hazard-aware route"]
+  end
+  subgraph Kestrel
+    F["Duplicate fusion<br/>one issue per problem"]
+    S["Severity engine<br/>community-weighted"]
+    L["Lifecycle<br/>public timeline"]
+    V["Routing validator<br/>avoids open hazards"]
+  end
+  subgraph City
+    O["Ward officer console<br/>triage, assign, resolve"]
+    P["Public ward scorecard"]
+  end
+  R1 --> F --> S --> O
+  R2 --> S
+  O --> L --> P
+  L --> R2
+  S --> V --> R3
+```
+
+Four promises:
+
+1. **One problem, one issue.** Duplicates strengthen an issue instead of burying it.
+2. **Severity you can audit.** Every priority shows the rule and the evidence behind it. No black-box score.
+3. **Fixed means citizens agree it is fixed.** Officer resolution is one step. Citizen confirmation closes it.
+4. **Claims, not measurements.** Reports are what people say they saw. Kestrel shows evidence, its age and its sources, and says what it does not know.
+
+## 5. The 60-second story
+
+> Priya rides a scooter from Lajpat Nagar to her office every morning. There is a deep pothole near the flyover ramp that she has hit three times this month.
+
+1. **Report (10 s).** Priya taps the mic and says *"flyover ke neeche bada gaddha hai, bahut gehra"*. Kestrel drafts a pothole report at her GPS location and shows *"We understood: pothole, deep, here"*. She attaches a photo and sends it. No signal under the flyover, so it waits in the offline outbox and sends itself a minute later.
+2. **Fusion.** Kestrel finds an open pothole issue 12 m away with 6 earlier reports. Priya's report joins it. The issue now shows **7 reports from 7 different people** and rises from P2 to **P1**.
+3. **Routing.** Rahul plans the same trip that evening. The route through the ramp is marked **avoided: P1 pothole, 7 reports, 2 photos**, and he gets an alternative that costs +2 min.
+4. **Triage.** The ward officer opens the console. The pothole sits at the top of the ward queue with photos, a map pin and an SLA clock. The officer assigns it to the road maintenance team.
+5. **Fix.** Two days later the crew marks it **Resolved** with an after-photo.
+6. **Confirmation.** Kestrel asks people who reported it: *"Is it fixed?"* Two of them say yes. The issue becomes **Closed: citizen-confirmed**. The ward scorecard counts it as a real fix.
+
+If instead people say *"still there"*, the issue reopens and the reopen counts against the ward's score.
+
+## 6. How it works
+
+### End-to-end flow
+
+```mermaid
+flowchart TD
+  A["Citizen opens Kestrel"] --> B{"How to report?"}
+  B -->|Voice| C["Speech recognition<br/>hi-IN / en-IN"]
+  B -->|Text| D["Hinglish / Hindi / English text"]
+  B -->|Camera| E["On-device model flags<br/>pothole / water"]
+  C --> X["Report drafter<br/>LLM with 2 s breaker, rules fallback"]
+  D --> X
+  E --> Y["Suggested category + location"]
+  X --> Z["We understood: category, place, details<br/>citizen reviews and edits"]
+  Y --> Z
+  Z --> N{"Nearby open issue<br/>of same category?"}
+  N -->|"Shown to user: is it one of these?"| M["Join existing issue<br/>as a confirmation"]
+  N -->|No match| Q["IndexedDB outbox<br/>idempotent eventId"]
+  M --> Q
+  Q -->|online| API["POST /v1/reports"]
+  API --> V["Validate, pseudonymise source,<br/>rate-limit"]
+  V --> FU["Fusion: attach to issue or create one"]
+  FU --> EV["Evidence policy: state per issue"]
+  EV --> SV["Severity score + priority tier"]
+  SV --> PUB["Public issue page + map"]
+  SV --> OFF["Ward officer queue"]
+  SV --> RT["Routing validator"]
+```
+
+### The two axes of an issue
+
+Every issue has **two independent states**. Mixing them is how most complaint systems lie.
+
+| Axis | Who moves it | Answers the question |
+|---|---|---|
+| **Evidence state** | Citizens' reports and votes, under the evidence policy | *Is the problem there right now, and how sure are we?* |
+| **Workflow state** | Ward officers, and citizens confirming fixes | *What is the city doing about it?* |
+
+An officer can mark an issue resolved, but if fresh reports say it is still there, the evidence state shows that and the issue reopens.
+
+## 7. Issue categories
+
+The evidence policy generalises from a single water hazard to a **category-aware policy, `civic-policy-v1`**. Each category has its own fusion radius, freshness window, severity base and routing impact. All values are configuration, tuned for a pilot, not engineering standards.
+
+| Category | Examples | Fusion radius | Evidence stays fresh for | Severity base | Affects routing | Likely owner (varies by road) |
+|---|---|---|---|---|---|---|
+| `POTHOLE` | Pothole, cave-in, broken road edge | 25 m | 30 days | 25 (+10 if reported deep) | Yes, when P1 | Road-owning agency (municipal corporation or public works department) |
+| `WATERLOGGING` | Flooded underpass, water on road | 60 m | 30 min | 35 | Yes, while reported | Drainage / public works / water utility |
+| `OPEN_MANHOLE` | Missing or broken cover | 15 m | 7 days | 40 | Yes | Water and sewerage utility |
+| `BLOCKED_ROAD` | Fallen tree, debris, construction without diversion | 40 m | 2 hours | 30 | Yes | Municipal corporation / traffic police |
+| `GARBAGE_DUMP` | Overflowing bin, illegal dumping | 40 m | 7 days | 15 | No | Municipal sanitation |
+| `STREETLIGHT_OUT` | Dark stretch, damaged pole | 20 m | 7 days | 20 | Night-time advisory only | Road-owning agency / power distribution company |
+| `OTHER` | Anything else on the street | 25 m | 7 days | 10 | No | Ward office triage |
+
+Short-lived hazards (water, blocked roads) expire quickly so routes recover. Slow hazards (potholes, garbage) stay open until someone reports them fixed, because **absence of new reports is not evidence that something was fixed**. That is the same rule the original water policy used: stale evidence is never silently turned green.
+
+## 8. Duplicate fusion
+
+Duplicate grouping is the heart of the prompt. Kestrel prevents duplicates at the source and merges the rest on the server.
+
+**At the source.** Before a report is sent, the app shows open issues of the same category within the fusion radius: *"Is it one of these?"* One tap turns a new complaint into a confirmation of an existing issue.
+
+**On the server.**
+
+```mermaid
+flowchart TD
+  R["New report<br/>category, lat/lon, observedAt"] --> G["Geohash cell of the point<br/>+ 8 neighbour cells"]
+  G --> C["Open issues of the same category<br/>in those cells"]
+  C --> D{"Any within the<br/>category fusion radius?"}
+  D -->|No| N["Create new issue<br/>centroid = report point"]
+  D -->|Yes| P["Pick the nearest one"]
+  P --> S{"Same source already<br/>counted on this issue?"}
+  S -->|Yes| U["Update that source's latest report<br/>count stays the same"]
+  S -->|No| A["Attach report<br/>distinct sources + 1"]
+  A --> M["Move centroid toward the<br/>running mean of report points"]
+  U --> E["Re-evaluate evidence + severity"]
+  M --> E
+  N --> E
+```
+
+Rules that keep fusion honest:
+
+- **Same category only.** A garbage dump next to a pothole is two issues.
+- **Each source counts once per issue.** Sources are HMAC pseudonyms that rotate daily. Ten reports from one phone are one voice.
+- **Retries are never witnesses.** The same `eventId` with the same body returns the original result. The same `eventId` with a different body is rejected with `409`.
+- **Freshness comes from `observedAt`**, never from upload time, so an offline report that syncs an hour later is treated as an hour old.
+- **Writes are revision-guarded.** Two reports arriving at the same moment never overwrite each other.
+- **Merges are reversible.** An officer can split a wrongly merged report into its own issue, and the timeline records it.
+
+The clustering approach (running-mean centroid, per-type radius) comes from Kestrel's earlier pothole map and is already covered by tests. The idempotency, pseudonymous sources and revision guards come from the evidence engine and are already covered by tests.
+
+## 9. Community verification and severity
+
+### Evidence states
+
+Each issue has exactly one evidence state at any moment. This is the original evidence state machine, now applied per issue and per category.
+
+```mermaid
+stateDiagram-v2
+  [*] --> REPORTED: first report
+  REPORTED --> CORROBORATED: 2nd distinct source or photo + confirmation
+  REPORTED --> CONFLICTED: newer "fixed / not there" vote
+  CORROBORATED --> CONFLICTED: newer "fixed / not there" vote
+  CONFLICTED --> CORROBORATED: newer "still there" votes
+  REPORTED --> STALE: freshness window passes
+  CORROBORATED --> STALE: freshness window passes
+  STALE --> CORROBORATED: new report or "still there"
+  CONFLICTED --> CLEAR_REPORTED: 2 distinct "fixed" votes accepted
+  STALE --> CLEAR_REPORTED: 2 distinct "fixed" votes accepted
+  CLEAR_REPORTED --> REPORTED: new report
+```
+
+| State | Meaning | Shown to the public as |
+|---|---|---|
+| `REPORTED` | One source | "Reported by 1 person" |
+| `CORROBORATED` | Two or more distinct sources agree, or one report with a photo plus a confirmation | "Confirmed by N people" |
+| `CONFLICTED` | Newer votes disagree | "People disagree, needs a check" |
+| `STALE` | Nothing fresh, never reported fixed | "Not re-checked recently, still treated as open" |
+| `CLEAR_REPORTED` | Two distinct sources say it is gone | "Reported fixed by citizens" |
+
+### Votes
+
+On any issue, anyone near it can tap one of three buttons:
+
+- **Still there**: a fresh positive observation.
+- **Fixed / not there**: a fresh negative observation.
+- **Add photo**: evidence attached to the issue, reviewed before it is shown publicly.
+
+Votes go through the same pipeline as reports: same pseudonymous source rules, same idempotency, same rate limits.
+
+### Severity score
+
+Severity is a **transparent sum of named parts**, capped at 100, and the issue page shows the breakdown.
+
+```mermaid
+flowchart LR
+  B["Category base<br/>10 to 40"] --> T(("Score<br/>0 to 100"))
+  C["Community<br/>+8 per distinct confirming source, max +30"] --> T
+  P["Photo evidence<br/>+5 once"] --> T
+  X["Exposure<br/>+10 on a major road, +10 near a school or hospital"] --> T
+  A["Overdue<br/>+1 per day past the category deadline, max +15"] --> T
+  T --> P1["P1: 70 and above"]
+  T --> P2["P2: 40 to 69"]
+  T --> P3["P3: below 40"]
+```
+
+Example: a deep pothole (25 + 10) on a major road (+10) with 5 distinct confirming sources (+30, capped) and a photo (+5) scores **80, P1**, and the page says exactly that.
+
+Conflicting "fixed" votes do not lower the score. They change the evidence state to `CONFLICTED`, which flags the issue for a check.
+
+## 10. Public resolution tracking
+
+### Workflow lifecycle
+
+```mermaid
+stateDiagram-v2
+  [*] --> OPEN: first report
+  OPEN --> VERIFIED: evidence CORROBORATED
+  VERIFIED --> ASSIGNED: officer assigns a team
+  OPEN --> ASSIGNED: officer assigns directly
+  ASSIGNED --> IN_PROGRESS: work started
+  IN_PROGRESS --> RESOLVED: officer marks fixed + after-photo
+  RESOLVED --> CLOSED: citizens confirm fixed
+  RESOLVED --> REOPENED: "still there" votes
+  RESOLVED --> CLOSED_UNCONFIRMED: no votes in 7 days
+  REOPENED --> ASSIGNED: officer re-assigns
+  OPEN --> REJECTED: officer rejects with a public reason
+  CLOSED --> [*]
+```
+
+- **`RESOLVED` is not the end.** It starts a confirmation window. People who reported the issue are asked *"Is it fixed?"*.
+- **`CLOSED`** needs two distinct "fixed" votes, the same rule that clears evidence.
+- **`CLOSED_UNCONFIRMED`** is shown as exactly that. Silence is never presented as confirmation.
+- **`REOPENED`** is public and counts against the ward's reopen rate.
+- **`REJECTED`** needs a written public reason (duplicate, not civic, private property, wrong location).
+
+### Public issue page
+
+Every issue has a shareable page at `/i/<issueId>` that works without an account and loads fast on 2G/3G:
+
+- Category, location on a map, ward and likely owning agency
+- Evidence state, report count, distinct sources and photos
+- Severity score with its breakdown
+- Workflow state, the deadline for the category and time open
+- **A full timeline**: every report (as "Source 3"), vote, assignment, status change and officer note, with timestamps
+- Buttons for **Still there**, **Fixed** and **Share** (WhatsApp and Web Share)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant C as Citizen
+  participant K as Kestrel API
+  participant O as Ward officer
+  C->>K: report pothole (photo, GPS)
+  K-->>C: joined issue ISS-4821 · 7 reports · P1
+  O->>K: assign to road maintenance team
+  K-->>C: timeline: Assigned
+  O->>K: in progress
+  O->>K: resolved + after-photo
+  K-->>C: "Is it fixed?"
+  C->>K: Fixed
+  Note over K: 2 distinct "fixed" votes
+  K-->>C: Closed · citizen-confirmed
+```
+
+### Ward scorecard
+
+A public page per ward, computed only from data Kestrel can defend:
+
+| Metric | Definition |
+|---|---|
+| Open issues by priority | Count of P1 / P2 / P3 not closed |
+| Median time to resolve | Report to `RESOLVED`, per category |
+| Citizen-confirmed fix rate | `CLOSED` ÷ (`CLOSED` + `CLOSED_UNCONFIRMED` + `REOPENED`) |
+| Reopen rate | Issues reopened after `RESOLVED` |
+| Overdue | Open issues past the category deadline |
+
+## 11. Ward officer console
+
+A desktop-first view of the same data, for the people who fix things.
+
+```mermaid
+flowchart LR
+  Q["Ward queue<br/>sorted by priority, then age"] --> D["Issue detail<br/>photos, timeline, evidence, severity breakdown"]
+  D --> A1["Assign team / agency"]
+  D --> A2["Mark in progress"]
+  D --> A3["Mark resolved<br/>after-photo required"]
+  D --> A4["Merge or split duplicates"]
+  D --> A5["Reject with public reason"]
+  M["Ward map<br/>clusters by category + priority"] --> D
+  S["Scorecard<br/>SLA, overdue, reopen rate"] --> Q
+```
+
+- **Ward-scoped access.** An officer acts only on issues in their ward.
+- **Every action is public.** Officer actions appear on the issue timeline with the role, not a personal name.
+- **No silent edits.** Officers cannot delete reports or change the evidence state. They can only move the workflow and attach notes.
+- **Bulk triage.** Select several P3 garbage issues on one street and assign them in one action.
+
+## 12. Hazard-aware routing
+
+Routing is Kestrel's answer to *"why should I report?"*: reports protect the reporter and everyone behind them.
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant P as Planner (PWA)
+  participant A as Kestrel API
+  participant T as Issue store
+  participant G as Google Routes / OSRM
+  P->>A: POST /v1/routes/compare {from, to, vehicle}
+  A->>T: open issues with routing impact near the corridor
+  A->>G: candidate routes with alternatives
+  G-->>A: geometries
+  A->>A: test every candidate against each hazard area in local metres<br/>(including segments that cross between vertices)
+  alt fastest route crosses a hazard
+    A->>G: re-request through a detour anchor
+    A->>A: validate the detour like any other candidate
+  end
+  A-->>P: selected route, rejected routes with reasons, +time, +distance
+  Note over P: polls for changes and re-routes when a new hazard appears
+```
+
+- **Validated avoidance.** A waypoint alone never proves a route avoids a hazard. Every candidate geometry is tested against every hazard area. ✅
+- **Explained.** *"Why this route?"* lists each avoided issue, its category, priority, report count and age. ✅ (water), 🔨 (all categories)
+- **Never fakes safety.** If no admissible route exists, Kestrel says so instead of drawing a reassuring line. ✅
+- **Vehicle-aware wording, never vehicle-aware safety.** A car is told the same as a scooter: reported water is avoided for everyone. ✅
+- **Live voice guidance.** Ride mode gives turn-by-turn guidance from GPS, a 3D heading-up map, pocket mode and spoken warnings in en-IN and hi-IN. ✅
+
+## 13. Edge AI road vision
+
+Two models run **in the browser with ONNX Runtime Web**. Video never leaves the phone.
+
+| Model | File | Job | Status |
+|---|---|---|---|
+| **YOLOv8n** | `app/public/models/pothole-yolov8n.onnx` | Pothole detection with tracking across frames, plus a heuristic depth estimate from flat-road geometry (labelled "est.") | ✅ |
+| **SegFormer-b0** (ADE20K) | `app/public/models/water-segformer-b0-ade.onnx` | Share of the road ahead that looks like water. Two of three runs at 15% or more raise "possible water" | ✅ |
+
+```mermaid
+flowchart TD
+  CAM["Phone camera on a mount"] --> Y["YOLOv8n pothole detector"]
+  CAM --> W["SegFormer water share"]
+  Y --> TR["Track across frames,<br/>inside rider's path, in reaction range"]
+  TR --> DP["Depth estimate<br/>under 0.03 m log · 0.03 to 0.06 m warn · over 0.06 m urgent"]
+  W -->|"2 of 3 checks at 15% or more"| PW["Possible water"]
+  DP --> AL["Spoken alert + dashcam clip"]
+  PW --> PR["Personal 20-min reroute<br/>for this rider only"]
+  DP --> SUG["Suggest a report:<br/>'Pothole here. Report it?'"]
+  PW --> SUG
+  SUG --> HUMAN["Citizen confirms before anything is sent"]
+```
+
+The camera **suggests**, the citizen **decides**. A camera detection is never stored as evidence by itself, because neither model has been validated on Indian monsoon or road footage. Detections turn into one-tap report suggestions that a person confirms.
+
+## 14. Built for Bharat
+
+| Constraint | How Kestrel handles it | Status |
+|---|---|---|
+| **Language** | English and Hindi interface. Reports by voice or text in Hindi, English or Hinglish (*"gaddha"*, *"paani bhara hai"*, *"light nahi jal rahi"*). | ✅ water vocabulary · 🔨 all categories |
+| **Voice** | Browser speech recognition for input. Neural en-IN and hi-IN voices for alerts, with the phone's built-in voice as an instant fallback. | ✅ |
+| **Weak networks** | Durable IndexedDB outbox: reports survive reloads and offline periods, retry with the same `eventId`, and send one at a time so nothing duplicates. Service worker caches the app shell. | ✅ |
+| **Low-end phones** | No front-end framework. Plain TypeScript and Vite. Camera models load only when ride mode starts. Works at 360 px width. | ✅ |
+| **First-time users** | Three-tap reporting: category, confirm location, send. Large touch targets, icons plus text plus colour for every state. | 🔨 |
+| **Accessibility** | Status is never colour-only. Spoken alerts. Pocket mode with a black screen for riders. | ✅ |
+| **Sharing** | Every issue has a public link for WhatsApp, RWA groups and local media. | 🔨 |
+
+## 15. Architecture
+
+```mermaid
+flowchart LR
+  subgraph Client["Phone / laptop / car screen: PWA"]
+    UI["Report · Map · Ride · Issue pages<br/>TypeScript + Vite"]
+    OB[("IndexedDB outbox")]
+    ML["ONNX Runtime Web<br/>YOLOv8n + SegFormer-b0"]
+  end
+  subgraph Officer["Ward officer console"]
+    OC["Queue · Map · Scorecard"]
+  end
+
+  UI -->|HTTPS| CF["CloudFront<br/>one origin"]
+  OC -->|HTTPS| CF
+  OB -->|"POST /v1/reports<br/>same eventId on retry"| CF
+  CF -->|"/*"| S3[("S3, private + OAC<br/>app + models")]
+  CF -->|"/v1/*"| GW["API Gateway HTTP API<br/>throttled"]
+
+  GW --> L1["Ingest Lambda<br/>validate · fuse · evaluate"]
+  GW --> L2["Draft Lambda<br/>LLM with 2 s breaker"]
+  GW --> L3["API Lambda<br/>issues · votes · workflow · routes"]
+
+  L1 -->|TransactWriteItems| DB[("DynamoDB<br/>issues, reports, timeline")]
+  L3 --> DB
+  L2 --> BR["Amazon Bedrock<br/>Nova Lite"]
+  L3 --> RT["Google Routes / OSRM"]
+  L3 --> WX["Open-Meteo<br/>context only"]
+  L3 --> TTS["Neural TTS<br/>en-IN / hi-IN"]
+```
+
+**Design choices**
+
+- **Pure domain core.** `backend/src/domain/` is standard-library Python with no cloud imports: policy, fusion, severity, lifecycle, geometry and validation run the same locally, in tests and on Lambda. ✅ (policy, geometry, routes, validation, extraction) · 🔨 (fusion, severity, lifecycle)
+- **One origin.** The CDN serves the app and forwards `/v1/*` to the API. No CORS problems, and HTTPS for camera and GPS.
+- **Two stores, one contract.** An in-process store for local runs and tests, DynamoDB in the cloud. Same revision and idempotency behaviour. ✅
+- **Scales to zero.** No VPC, NAT gateway or provisioned capacity. Near-zero idle cost, which matters for a civic pilot.
+- **Spatial lookup without a GIS server.** Issues are indexed by geohash cell (about 1.2 km × 0.6 km at precision 6). A fusion lookup reads the cell and its 8 neighbours. 🔨
+
+### Reporting sequence
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant R as Reporter (PWA)
+  participant D as Draft Lambda
+  participant B as Bedrock
+  participant I as Ingest Lambda
+  participant T as DynamoDB
+  R->>D: POST /v1/report-drafts {"text": "gali mein kooda dher pada hai"}
+  D->>B: Converse (2 s budget)
+  B-->>D: category, place words, details
+  D-->>R: draft (method: bedrock | rules + reason)
+  Note over R: "We understood: garbage dump, here" review step
+  R->>R: queue in IndexedDB outbox (eventId)
+  R->>I: POST /v1/reports (eventId, observedAt, category, location)
+  I->>T: read open issues in geohash cells
+  I->>I: fuse → evaluate evidence → score severity
+  I->>T: TransactWriteItems (idempotency + report + issue revision + timeline entry)
+  I-->>R: 201 new issue · 200 joined issue · 200 duplicate retry · 409 reused eventId · 422 invalid
+```
+
+**LLM guardrails** (carried over from the existing drafter, ✅):
+
+- **2 second circuit breaker.** Slow or failing model calls fall back to deterministic keyword rules. The user never sees a `500`.
+- **Untrusted input.** The prompt treats the message as data and ignores instructions inside it.
+- **No invented facts.** Places and depths must be quoted from the original text.
+- **Drafts never change state.** A draft is a suggestion until the citizen reviews and sends it.
+
+## 16. Data model
+
+```mermaid
+erDiagram
+  WARD ||--o{ ISSUE : contains
+  ISSUE ||--o{ REPORT : "fuses"
+  ISSUE ||--o{ VOTE : "verified by"
+  ISSUE ||--o{ TIMELINE_ENTRY : "history"
+  ISSUE ||--o{ PHOTO : "evidence"
+  SOURCE ||--o{ REPORT : "pseudonymous"
+  SOURCE ||--o{ VOTE : "pseudonymous"
+  OFFICER ||--o{ TIMELINE_ENTRY : "acts on"
+
+  ISSUE {
+    string issueId
+    string category
+    float lat
+    float lon
+    string geohash6
+    string wardId
+    string evidenceState
+    string workflowState
+    int severity
+    string priority
+    int distinctSources
+    int revision
+    string openedAt
+    string dueAt
+  }
+  REPORT {
+    string eventId
+    string issueId
+    string sourceKey
+    string observedAt
+    string description
+    string detailClaim
+  }
+  VOTE {
+    string eventId
+    string issueId
+    string sourceKey
+    string kind
+    string observedAt
+  }
+  TIMELINE_ENTRY {
+    string entryId
+    string issueId
+    string at
+    string actorRole
+    string action
+    string note
+  }
+  WARD {
+    string wardId
+    string name
+    string agency
+  }
+```
+
+DynamoDB single-table layout (extends the existing key design):
+
+| PK | SK | Item |
+|---|---|---|
+| `NS#<ns>#ISSUE#<id>` | `STATE` | Issue aggregate with `revision` |
+| `NS#<ns>#ISSUE#<id>` | `RPT#<observedAt>#<eventId>` | Immutable report or vote |
+| `NS#<ns>#ISSUE#<id>` | `TL#<at>#<entryId>` | Timeline entry |
+| `NS#<ns>#CELL#<geohash6>` | `ISSUE#<category>#<id>` | Spatial index for fusion and map reads |
+| `NS#<ns>#WARD#<wardId>` | `ISSUE#<priority>#<id>` | Officer queue index |
+| `NS#<ns>#ACTOR#<sourceKey>` | `EVENT#<eventId>` | Idempotency record + payload hash |
+
+## 17. API
+
+Errors use one envelope: `{"error": {"code", "message", "retryable", "requestId"}}`.
+
+| Endpoint | Auth | Purpose | Status |
+|---|---|---|---|
+| `GET /v1/status` | public | Mode, policy version, capabilities, server time | ✅ |
+| `GET /v1/issues?bbox=&category=&state=` | public | Issues on the map, with evidence and workflow state | 🔨 |
+| `GET /v1/issues/{id}` | public, redacted | Issue page: evidence ("Source 1"), severity breakdown, timeline | 🔨 |
+| `POST /v1/reports` | contributor | Idempotent report. Returns the issue it created or joined | 🔨 (generalises today's `POST /v1/observations` ✅) |
+| `POST /v1/issues/{id}/votes` | contributor | `STILL_THERE` / `FIXED`, idempotent | 🔨 |
+| `POST /v1/issues/{id}/transitions` | ward officer | Assign, start, resolve (after-photo), reject, merge, split. Revision-checked | 🔨 (today's reviewer flow `POST /v1/reviews` ✅) |
+| `GET /v1/wards/{id}/queue` | ward officer | Priority-sorted queue | 🔨 |
+| `GET /v1/wards/{id}/scorecard` | public | Ward metrics | 🔨 |
+| `POST /v1/routes/compare` | public | Route decision avoiding open hazards, with reasons | ✅ (water) · 🔨 (all categories) |
+| `POST /v1/report-drafts` | contributor | Free text to structured draft. Never changes state | ✅ (water) · 🔨 (all categories) |
+| `GET /v1/geocode` | public | Place search | ✅ |
+| `GET /v1/weather` | public | Rainfall context, never evidence | ✅ |
+| `GET /v1/tts?text=&lang=en\|hi` | public | Neural voice MP3 | ✅ |
+| `POST /v1/demo/control` | demo admin, demo only | Reset, demo clock, simulated failures | ✅ |
+
+## 18. Trust, safety and privacy
+
+- **Reports are claims, not measurements.** The UI says "reported by", never "detected" or "verified by the city", unless that is true.
+- **Pseudonymous sources.** Contributor identities are HMAC-hashed on the server with a daily rotation. Public pages show "Source 1", "Source 2".
+- **No identity from the request body.** Who is calling comes only from the transport (demo header or a JWT), never from a field the browser can set.
+- **Strict validation.** Unknown fields are rejected, so a client cannot smuggle in `verified`, `official` or `severity`.
+- **Free text stays private** outside demo mode, because it can contain personal details.
+- **Photos are reviewed before they are public**, and faces and number plates are blurred. 🔨
+- **Rate limits** per source (10 per minute, 100 per day) and API throttling.
+- **Coordinated abuse is a known limit.** Several accounts can still push a fake issue up. Mitigations: distinct-source counting, photo weight, officer rejection with a public reason, and sign-in for pilot mode.
+
+## 19. Run it locally
+
+No cloud account needed. Requires **Python 3.12+** and **Node 22+** (Node 24 tested). The backend uses only the Python standard library.
+
+**One command:**
+
+```bash
+python run.py
+```
+
+It installs what is missing, builds the app if the source changed, starts the server, opens an HTTPS tunnel and **prints a QR code**. Scan it and the app opens on your phone with camera and GPS working. Ctrl+C stops everything.
+
+Options: `--no-tunnel` (LAN only, camera disabled without HTTPS), `--port N`, `--rebuild`.
+
+**Manual:**
+
+```bash
+cd app
+npm install
+npm run build
+cd ..
+python backend/local_server.py        # http://127.0.0.1:8787  (APP_MODE=local-demo)
+```
+
+For UI work with hot reload: `cd app && npm run dev` (Vite proxies `/v1` to the local server).
+
+On Windows PowerShell 5.1, `&&` does not work. Run each command on its own line.
+
+**Drive the demo from a terminal:**
+
+```bash
+python scripts/demo.py status
+python scripts/demo.py report a          # synthetic contributor A reports
+python scripts/demo.py report b          # a second distinct source corroborates
+python scripts/demo.py compare           # route decision with reasons
+python scripts/demo.py advance 35        # demo clock +35 min
+python scripts/demo.py reset
+```
+
+Every report this script sends is synthetic and stored with provenance `SYNTHETIC_DEMO`.
+
+## 20. Deploy
+
+The cloud stack is defined in `backend/template.yaml` (AWS SAM): CloudFront, a private S3 bucket with Origin Access Control, an HTTP API with throttling, three Python 3.12 Lambdas on arm64, DynamoDB with transactions and TTL, Bedrock and CloudWatch Logs.
+
+```bash
+cd backend
+sam build --use-container
+sam deploy --guided --stack-name kestrel --region <your-region> \
+  --capabilities CAPABILITY_IAM \
+  --parameter-overrides DemoAdminKey=<16+ random chars> PseudonymSalt=<16+ random chars> \
+    BuildId=$(git rev-parse --short HEAD) \
+    BedrockModelId=<optional model or inference profile> \
+    GoogleMapsApiKey=<optional Routes API key>
+
+cd ../app
+npm run build
+aws s3 sync dist s3://<SiteBucketName> --delete
+aws cloudfront create-invalidation --distribution-id <DistributionId> --paths "/*"
+
+DEMO_ADMIN_KEY=<same key> python ../scripts/demo.py --api <AppUrl> smoke
+```
+
+- Use a Bedrock model enabled in your account and Region, or leave it empty for rules-only drafting.
+- The template deploys demo mode only. Pilot mode (real citizen accounts, officer roles) needs a JWT authorizer on write routes first.
+- Teardown: empty the site bucket, then `sam delete --stack-name kestrel`.
+
+## 21. Tests
+
+| Command | What it proves | Result |
+|---|---|---|
+| `python -m unittest discover -s backend/tests -v` | 70 tests: evidence-policy scenarios, idempotency and `409` on reused event IDs, revision conflicts, DynamoDB transaction shape, Hinglish extraction (positive, negated, ambiguous), LLM breaker (timeout, hallucinated place, invented depth), route validation and dynamic bypass, depth claims, weather | ✅ 70/70 pass |
+| `cd app && npm run check` | Camera alert engine, outbox retries and single-flight, navigation core, water and depth heuristics, map tint, pothole log | ✅ 7/7 suites pass |
+| `python server/test_server.py` | Pothole clustering (merge within radius, separate by type and distance) and consensus scoring with decay | ✅ pass |
+| `python scripts/demo.py --api <url> smoke` | Golden journey over HTTP: idempotency, `409`, corroboration, route switch, concurrent writes, anonymous write rejected, stale evidence, provider failure | ✅ against a deployed stack |
+| `node scripts/e2e-browser.mjs <out-dir>` | Headless Chrome with fake camera and GPS at 360 px: report, review, submit, corroboration, route switch, evidence drawer, Hindi, offline queue, ride mode | ✅ locally |
+| Fusion, severity and lifecycle suites | Merge radius per category, distinct-source counting, score breakdown, every workflow transition, citizen-confirmed closure, reopen | 🔨 |
+
+## 22. Configuration
+
+See [.env.example](.env.example). Secrets live only on the server. The browser receives no credentials.
+
+| Variable | Where | Purpose |
+|---|---|---|
+| `APP_MODE` | server | `local-demo` · `aws-demo` · `live-pilot` |
+| `DEMO_ADMIN_KEY` | server | Demo officer/reviewer actions and `/v1/demo/control` |
+| `PSEUDONYM_SALT` | server | HMAC salt for source pseudonyms (required outside `local-demo`) |
+| `EVIDENCE_FRESHNESS_MINUTES` | server | Freshness window for short-lived hazards (default 30) |
+| `HAZARD_POLL_SECONDS` | server | Poll interval the client is told to use (default 15) |
+| `RETENTION_DAYS` | server | DynamoDB TTL for reports and idempotency rows |
+| `TABLE_NAME` | server (cloud) | Set = DynamoDB, unset = in-process store |
+| `BEDROCK_MODEL_ID` | server (cloud) | LLM for report drafts. Empty = rules only |
+| `GOOGLE_MAPS_API_KEY` | server | Optional Google Routes API. Empty = public OSRM |
+| `VITE_API_BASE` | build | Empty = same origin |
+| `VITE_GOOGLE_MAPS_KEY` | build | Optional Maps JavaScript key. Empty = OpenStreetMap via Leaflet |
+
+## 23. Repository layout
+
+```
+app/                       Vite + TypeScript PWA, no framework
+  src/flood/               planner, reporter, evidence drawer, API client,
+                           offline outbox, navigation core, EN/HI strings
+  src/map/                 Google Maps / Leaflet map view, markers, tint
+  src/main.ts              screen wiring, ride mode, camera loop
+  src/detector.ts          YOLOv8n pothole detector (ONNX Runtime Web)
+  src/waterModel.ts        SegFormer water segmentation
+  src/hazards.ts           camera alert engine (tracking, path, range)
+  src/potholeDepth.ts      depth estimate heuristic
+  src/dashcam.ts           speed-adaptive recorder
+  public/models/           ONNX models
+  public/sw.js             service worker
+backend/
+  src/domain/              policy, geometry, routes, validation, extraction
+                           (pure, standard library)
+  src/providers/           LLM drafting, routing / geocode / weather, TTS
+  src/storage/             in-process store and DynamoDB adapter
+  src/service.py           operations, idempotency, revisions, auth mapping
+  src/handlers/api.py      Lambda entry point
+  src/data/                corridor fixtures, landmarks, data sources
+  template.yaml            AWS SAM stack
+  local_server.py          local server, same contract
+  tests/                   unittest suites
+server/                    earlier pothole clustering service (FastAPI + SQLite),
+                           source of the fusion approach
+scripts/                   demo driver, browser e2e, corridor fetcher
+ml/                        dataset config and training scripts for the
+                           next multi-class road model
+android/                   installing the PWA as an Android app (TWA)
+run.py                     one-command local run with HTTPS tunnel + QR code
+```
+
+Planned for the hackathon build: `backend/src/domain/fusion.py`, `severity.py`, `lifecycle.py`, `categories.py`; `app/src/issues/` (issue page, votes, category picker); `app/src/officer/` (ward console); `backend/src/data/wards/` (sample wards and seed issues).
+
+## 24. Build status and roadmap
+
+### Carried over and working ✅
+
+- Evidence engine: per-source counting, idempotency, freshness from `observedAt`, revision guards, stale-never-green, conflict handling
+- Route validation against hazard polygons, dynamic bypass, explained decisions
+- Hindi / English / Hinglish drafting with LLM breaker and rules fallback
+- Offline IndexedDB outbox, service worker, voice I/O, neural TTS
+- Ride mode: GPS guidance, 3D map, pocket mode, dashcam, two on-device models
+- Pothole clustering and consensus scoring (earlier service)
+- AWS SAM stack, local server, 70 backend tests, 7 frontend check suites
+
+### Hackathon build 🔨
+
+```mermaid
+flowchart LR
+  P1["1. Rename + clean<br/>Kestrel everywhere"] --> P2["2. Category-aware policy<br/>civic-policy-v1"]
+  P2 --> P3["3. Issues anywhere<br/>geohash fusion"]
+  P3 --> P4["4. Votes + severity<br/>score breakdown"]
+  P4 --> P5["5. Lifecycle +<br/>public issue page"]
+  P5 --> P6["6. Ward officer console<br/>+ scorecard"]
+  P6 --> P7["7. Routing across<br/>all route-impact categories"]
+  P7 --> P8["8. Realistic seed data<br/>several Delhi wards"]
+  P8 --> P9["9. Demo story,<br/>video, live deploy"]
+```
+
+### After the hackathon 🧭
+
+- Sign-in (phone OTP) and a JWT authorizer for real citizen and officer accounts
+- Photo review pipeline with face and number-plate blurring
+- A multi-class road model trained on Indian data (pothole, waterlogging, stalled vehicle, blockage), with dataset licences checked first
+- Export to existing municipal grievance systems so officers do not use two tools
+- More regional languages for reporting and voice
+- Open data feed of anonymised, aggregated issues for researchers and journalists
+
+### Known limits
+
+- Reports are claims. Distinct-source counting is pseudonymous and approximate.
+- Camera estimates are heuristics, not validated on Indian monsoon or road footage.
+- Ward boundaries and agency ownership in the demo are sample data and need confirmation with the civic body before a real pilot.
+- The demo runs on synthetic data, labelled as such on every screen.
+
+## 25. Value and adoption
+
+**For citizens:** a report takes seconds, counts, is visible, and protects them on the road the same day.
+
+**For ward officers:** fewer, better tickets. One issue instead of twenty complaints, with photos, an exact location, a priority and a deadline.
+
+**For civic bodies:** a measure of road condition that citizens trust, because a fix only counts when citizens confirm it.
+
+**Adoption path**
+
+```mermaid
+flowchart LR
+  A["Pilot: one ward<br/>RWAs + delivery riders report"] --> B["Ward office uses the console<br/>alongside existing systems"]
+  B --> C["Public scorecard<br/>creates pressure and credit"]
+  C --> D["Zone-level rollout<br/>export to existing grievance systems"]
+  D --> E["City-wide<br/>open data feed"]
+```
+
+- **Cheap to run.** Serverless, scales to zero, no GIS server, no native app store release needed (installable PWA).
+- **Seeding the network.** Delivery riders, auto drivers and RWAs already travel the same roads every day and benefit directly from hazard-aware routing.
+- **Fits existing systems.** Kestrel deduplicates and ranks. It can forward one clean issue to an existing grievance system instead of replacing it.
+
+## 26. How Kestrel maps to the judging criteria
+
+| Criterion | Weight | Where Kestrel answers it |
+|---|---|---|
+| Problem understanding | 25% | [§1](#1-the-problem), [§2](#2-who-we-build-for), [§3](#3-why-existing-solutions-fall-short): duplicates, invisible severity, self-certified closure, fragmented ownership |
+| Working solution | 25% | A real PWA and API with tested evidence, routing and offline engines ([§21](#21-tests)), one-command local run, serverless deploy |
+| Innovation | 20% | Two-axis issues (evidence vs workflow), citizen-confirmed closure, auditable severity, reports that reroute riders, edge AI that suggests and never decides |
+| Value and impact | 20% | Fewer and better tickets for officers, public scorecards, a direct personal benefit for reporters, a clear pilot path ([§25](#25-value-and-adoption)) |
+| User experience | 10% | Voice in Hindi / English / Hinglish, offline outbox, 360 px layouts, colour-independent states, spoken alerts ([§14](#14-built-for-bharat)) |
+
+---
+
+Map data © OpenStreetMap contributors (ODbL). Place search via Photon and Nominatim.
