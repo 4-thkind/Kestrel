@@ -1,0 +1,261 @@
+{
+  "split": "dev",
+  "classes": [
+    "pothole",
+    "waterlogging",
+    "open_manhole",
+    "blocked_road",
+    "garbage",
+    "manhole_cover",
+    "road_ok",
+    "not_street"
+  ],
+  "teachers": {
+    "web": {
+      "n": 223,
+      "accuracy": 0.982,
+      "recall": {
+        "pothole": "26/26",
+        "waterlogging": "25/25",
+        "blocked_road": "5/5",
+        "garbage": "27/27",
+        "manhole_cover": "57/58",
+        "road_ok": "18/21",
+        "not_street": "61/61"
+      },
+      "byConfidence": {
+        "0.0": {
+          "coverage": 1.0,
+          "accuracy": 0.982
+        },
+        "0.5": {
+          "coverage": 0.955,
+          "accuracy": 0.981
+        },
+        "0.6": {
+          "coverage": 0.906,
+          "accuracy": 0.99
+        },
+        "0.7": {
+          "coverage": 0.879,
+          "accuracy": 0.995
+        },
+        "0.8": {
+          "coverage": 0.834,
+          "accuracy": 0.995
+        },
+        "0.9": {
+          "coverage": 0.744,
+          "accuracy": 0.994
+        }
+      }
+    },
+    "heldout": {
+      "n": 238,
+      "accuracy": 0.84,
+      "recall": {
+        "garbage": "134/149",
+        "manhole_cover": "22/32",
+        "road_ok": "44/57"
+      },
+      "byConfidence": {
+        "0.0": {
+          "coverage": 1.0,
+          "accuracy": 0.84
+        },
+        "0.5": {
+          "coverage": 0.878,
+          "accuracy": 0.876
+        },
+        "0.6": {
+          "coverage": 0.769,
+          "accuracy": 0.907
+        },
+        "0.7": {
+          "coverage": 0.71,
+          "accuracy": 0.923
+        },
+        "0.8": {
+          "coverage": 0.622,
+          "accuracy": 0.953
+        },
+        "0.9": {
+          "coverage": 0.458,
+          "accuracy": 0.991
+        }
+      }
+    },
+    "all": {
+      "n": 461,
+      "accuracy": 0.909,
+      "recall": {
+        "pothole": "26/26",
+        "waterlogging": "25/25",
+        "blocked_road": "5/5",
+        "garbage": "161/176",
+        "manhole_cover": "79/90",
+        "road_ok": "62/78",
+        "not_street": "61/61"
+      },
+      "byConfidence": {
+        "0.0": {
+          "coverage": 1.0,
+          "accuracy": 0.909
+        },
+        "0.5": {
+          "coverage": 0.915,
+          "accuracy": 0.929
+        },
+        "0.6": {
+          "coverage": 0.835,
+          "accuracy": 0.951
+        },
+        "0.7": {
+          "coverage": 0.792,
+          "accuracy": 0.962
+        },
+        "0.8": {
+          "coverage": 0.725,
+          "accuracy": 0.976
+        },
+        "0.9": {
+          "coverage": 0.597,
+          "accuracy": 0.993
+        }
+      }
+    }
+  },
+  "student": {
+    "web": {
+      "n": 223,
+      "accuracy": 0.901,
+      "recall": {
+        "pothole": "25/26",
+        "waterlogging": "20/25",
+        "blocked_road": "5/5",
+        "garbage": "26/27",
+        "manhole_cover": "57/58",
+        "road_ok": "15/21",
+        "not_street": "53/61"
+      },
+      "byConfidence": {
+        "0.0": {
+          "coverage": 1.0,
+          "accuracy": 0.901
+        },
+        "0.5": {
+          "coverage": 0.955,
+          "accuracy": 0.925
+        },
+        "0.6": {
+          "coverage": 0.915,
+          "accuracy": 0.936
+        },
+        "0.7": {
+          "coverage": 0.87,
+          "accuracy": 0.943
+        },
+        "0.8": {
+          "coverage": 0.834,
+          "accuracy": 0.952
+        },
+        "0.9": {
+          "coverage": 0.78,
+          "accuracy": 0.971
+        }
+      }
+    },
+    "heldout": {
+      "n": 238,
+      "accuracy": 0.727,
+      "recall": {
+        "garbage": "101/149",
+        "manhole_cover": "25/32",
+        "road_ok": "47/57"
+      },
+      "byConfidence": {
+        "0.0": {
+          "coverage": 1.0,
+          "accuracy": 0.727
+        },
+        "0.5": {
+          "coverage": 0.903,
+          "accuracy": 0.772
+        },
+        "0.6": {
+          "coverage": 0.803,
+          "accuracy": 0.827
+        },
+        "0.7": {
+          "coverage": 0.714,
+          "accuracy": 0.847
+        },
+        "0.8": {
+          "coverage": 0.529,
+          "accuracy": 0.913
+        },
+        "0.9": {
+          "coverage": 0.412,
+          "accuracy": 0.959
+        }
+      }
+    },
+    "all": {
+      "n": 461,
+      "accuracy": 0.811,
+      "recall": {
+        "pothole": "25/26",
+        "waterlogging": "20/25",
+        "blocked_road": "5/5",
+        "garbage": "127/176",
+        "manhole_cover": "82/90",
+        "road_ok": "62/78",
+        "not_street": "53/61"
+      },
+      "byConfidence": {
+        "0.0": {
+          "coverage": 1.0,
+          "accuracy": 0.811
+        },
+        "0.5": {
+          "coverage": 0.928,
+          "accuracy": 0.848
+        },
+        "0.6": {
+          "coverage": 0.857,
+          "accuracy": 0.884
+        },
+        "0.7": {
+          "coverage": 0.79,
+          "accuracy": 0.898
+        },
+        "0.8": {
+          "coverage": 0.677,
+          "accuracy": 0.936
+        },
+        "0.9": {
+          "coverage": 0.59,
+          "accuracy": 0.967
+        }
+      }
+    }
+  },
+  "sameSpot": {
+    "pairs": {
+      "same": 461,
+      "different": 457
+    },
+    "threshold": 0.92,
+    "recallAtThreshold": 0.957,
+    "falseMatchAtThreshold": 0.05,
+    "meanSimilarity": {
+      "same": 0.969,
+      "different": 0.754
+    }
+  },
+  "potholeSize": {
+    "severe": 69,
+    "low": 143,
+    "aucLargeVsSmall": 0.695
+  }
+}

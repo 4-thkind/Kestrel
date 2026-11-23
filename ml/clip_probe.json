@@ -1,0 +1,218 @@
+{
+  "mobileclip2_s0": {
+    "zeroShot": {
+      "acc": 0.76,
+      "macro": 0.75,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.891,
+        "MirkoCompagno/pothole": 0.786,
+        "Shynuaa/garbage": 0.779,
+        "delima87/manhole": 0.771,
+        "delima87/road_ok": 0.524
+      }
+    },
+    "linearProbe": {
+      "acc": 0.483,
+      "macro": 0.506,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.065,
+        "MirkoCompagno/pothole": 0.154,
+        "Shynuaa/garbage": 0.486,
+        "delima87/manhole": 0.857,
+        "delima87/road_ok": 0.968
+      }
+    },
+    "blend": {
+      "acc": 0.66,
+      "macro": 0.617,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.283,
+        "MirkoCompagno/pothole": 0.376,
+        "Shynuaa/garbage": 0.757,
+        "delima87/manhole": 0.829,
+        "delima87/road_ok": 0.841
+      }
+    },
+    "dim": 512
+  },
+  "mobileclip_s1": {
+    "zeroShot": {
+      "acc": 0.799,
+      "macro": 0.784,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.913,
+        "MirkoCompagno/pothole": 0.709,
+        "Shynuaa/garbage": 0.85,
+        "delima87/manhole": 0.814,
+        "delima87/road_ok": 0.635
+      }
+    },
+    "linearProbe": {
+      "acc": 0.639,
+      "macro": 0.664,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.478,
+        "MirkoCompagno/pothole": 0.342,
+        "Shynuaa/garbage": 0.657,
+        "delima87/manhole": 0.857,
+        "delima87/road_ok": 0.984
+      }
+    },
+    "blend": {
+      "acc": 0.788,
+      "macro": 0.789,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.826,
+        "MirkoCompagno/pothole": 0.564,
+        "Shynuaa/garbage": 0.843,
+        "delima87/manhole": 0.871,
+        "delima87/road_ok": 0.841
+      }
+    },
+    "dim": 512
+  },
+  "rn50_openai": {
+    "zeroShot": {
+      "acc": 0.802,
+      "macro": 0.751,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.761,
+        "MirkoCompagno/pothole": 0.709,
+        "Shynuaa/garbage": 0.9,
+        "delima87/manhole": 0.7,
+        "delima87/road_ok": 0.683
+      }
+    },
+    "linearProbe": {
+      "acc": 0.587,
+      "macro": 0.551,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.0,
+        "MirkoCompagno/pothole": 0.299,
+        "Shynuaa/garbage": 0.657,
+        "delima87/manhole": 0.829,
+        "delima87/road_ok": 0.968
+      }
+    },
+    "blend": {
+      "acc": 0.694,
+      "macro": 0.619,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.043,
+        "MirkoCompagno/pothole": 0.547,
+        "Shynuaa/garbage": 0.786,
+        "delima87/manhole": 0.8,
+        "delima87/road_ok": 0.921
+      }
+    },
+    "dim": 1024
+  },
+  "vitb32_openai": {
+    "zeroShot": {
+      "acc": 0.727,
+      "macro": 0.65,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.457,
+        "MirkoCompagno/pothole": 0.701,
+        "Shynuaa/garbage": 0.821,
+        "delima87/manhole": 0.857,
+        "delima87/road_ok": 0.413
+      }
+    },
+    "linearProbe": {
+      "acc": 0.655,
+      "macro": 0.572,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.0,
+        "MirkoCompagno/pothole": 0.299,
+        "Shynuaa/garbage": 0.807,
+        "delima87/manhole": 0.786,
+        "delima87/road_ok": 0.968
+      }
+    },
+    "blend": {
+      "acc": 0.717,
+      "macro": 0.625,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.022,
+        "MirkoCompagno/pothole": 0.513,
+        "Shynuaa/garbage": 0.843,
+        "delima87/manhole": 0.843,
+        "delima87/road_ok": 0.905
+      }
+    },
+    "dim": 512
+  },
+  "vitb32_laion2b": {
+    "zeroShot": {
+      "acc": 0.689,
+      "macro": 0.696,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.826,
+        "MirkoCompagno/pothole": 0.538,
+        "Shynuaa/garbage": 0.729,
+        "delima87/manhole": 0.671,
+        "delima87/road_ok": 0.714
+      }
+    },
+    "linearProbe": {
+      "acc": 0.616,
+      "macro": 0.63,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.304,
+        "MirkoCompagno/pothole": 0.453,
+        "Shynuaa/garbage": 0.607,
+        "delima87/manhole": 0.8,
+        "delima87/road_ok": 0.984
+      }
+    },
+    "blend": {
+      "acc": 0.717,
+      "macro": 0.705,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.435,
+        "MirkoCompagno/pothole": 0.615,
+        "Shynuaa/garbage": 0.736,
+        "delima87/manhole": 0.8,
+        "delima87/road_ok": 0.937
+      }
+    },
+    "dim": 512
+  },
+  "vitb16_datacomp": {
+    "zeroShot": {
+      "acc": 0.767,
+      "macro": 0.76,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.978,
+        "MirkoCompagno/pothole": 0.453,
+        "Shynuaa/garbage": 0.871,
+        "delima87/manhole": 0.829,
+        "delima87/road_ok": 0.667
+      }
+    },
+    "linearProbe": {
+      "acc": 0.597,
+      "macro": 0.595,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.109,
+        "MirkoCompagno/pothole": 0.41,
+        "Shynuaa/garbage": 0.6,
+        "delima87/manhole": 0.871,
+        "delima87/road_ok": 0.984
+      }
+    },
+    "blend": {
+      "acc": 0.764,
+      "macro": 0.742,
+      "bySource": {
+        "Arpitraj01/road_ok": 0.522,
+        "MirkoCompagno/pothole": 0.479,
+        "Shynuaa/garbage": 0.843,
+        "delima87/manhole": 0.943,
+        "delima87/road_ok": 0.921
+      }
+    },
+    "dim": 512
+  }
+}

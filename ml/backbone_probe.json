@@ -1,0 +1,46 @@
+{
+  "mobilenet_v3_large": {
+    "heldOutAccuracy": 0.55,
+    "heldOutMacroBySource": 0.492,
+    "bySource": {
+      "Arpitraj01/road_ok": "0/48",
+      "MirkoCompagno/pothole": "9/117",
+      "Shynuaa/garbage": "200/282",
+      "delima87/manhole": "47/70",
+      "delima87/road_ok": "63/63"
+    }
+  },
+  "efficientnet_b0": {
+    "heldOutAccuracy": 0.59,
+    "heldOutMacroBySource": 0.527,
+    "bySource": {
+      "Arpitraj01/road_ok": "0/48",
+      "MirkoCompagno/pothole": "13/117",
+      "Shynuaa/garbage": "212/282",
+      "delima87/manhole": "54/70",
+      "delima87/road_ok": "63/63"
+    }
+  },
+  "regnet_y_800mf": {
+    "heldOutAccuracy": 0.562,
+    "heldOutMacroBySource": 0.51,
+    "bySource": {
+      "Arpitraj01/road_ok": "0/48",
+      "MirkoCompagno/pothole": "10/117",
+      "Shynuaa/garbage": "200/282",
+      "delima87/manhole": "53/70",
+      "delima87/road_ok": "63/63"
+    }
+  },
+  "convnext_tiny": {
+    "heldOutAccuracy": 0.555,
+    "heldOutMacroBySource": 0.524,
+    "bySource": {
+      "Arpitraj01/road_ok": "2/48",
+      "MirkoCompagno/pothole": "9/117",
+      "Shynuaa/garbage": "190/282",
+      "delima87/manhole": "58/70",
+      "delima87/road_ok": "63/63"
+    }
+  }
+}

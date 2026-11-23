@@ -1,0 +1,71 @@
+{
+  "model": "mobilenet_v3_small (ImageNet) fine-tuned",
+  "classes": [
+    "pothole",
+    "garbage",
+    "manhole",
+    "road_ok"
+  ],
+  "input": "1x3x224x224 RGB 0..1",
+  "split": {
+    "train": 3056,
+    "val": 353,
+    "test": 576
+  },
+  "epochs": 14,
+  "bestValAccuracy": 0.977,
+  "testAccuracy": 0.557,
+  "testRecall": {
+    "pothole": 0.231,
+    "garbage": 0.507,
+    "manhole": 0.971,
+    "road_ok": 0.771
+  },
+  "testPrecision": {
+    "pothole": 0.144,
+    "garbage": 0.626,
+    "manhole": 1.0,
+    "road_ok": 0.903
+  },
+  "testBySource": {
+    "Arpitraj01/road_ok": "21/46 (46%)",
+    "MirkoCompagno/pothole": "27/117 (23%)",
+    "Shynuaa/garbage": "142/280 (51%)",
+    "delima87/manhole": "68/70 (97%)",
+    "delima87/road_ok": "63/63 (100%)"
+  },
+  "confusionRowsTruth": [
+    [
+      27,
+      85,
+      0,
+      5
+    ],
+    [
+      136,
+      142,
+      0,
+      2
+    ],
+    [
+      0,
+      0,
+      68,
+      2
+    ],
+    [
+      25,
+      0,
+      0,
+      84
+    ]
+  ],
+  "heldOutSources": [
+    "MirkoCompagno",
+    "Shynuaa"
+  ],
+  "onnxMaxAbsDiff": 2.3245811462402344e-06,
+  "onnxBytes": 6099552,
+  "droppedVehiclePhotos": 155,
+  "sources": "ml/fetch_classifier_data.py (licences listed there)"
+}
