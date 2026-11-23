@@ -43,6 +43,6 @@ work on these to fix things using this.md
 /*.md
 !/README.md
 
-# video build outputs (regenerate with the scripts in each folder)
-demo video/build/
-project explanation/build/
+# demo and explainer videos with their build scripts: kept locally, never committed
+demo video/
+project explanation/
