@@ -1,0 +1,38 @@
+{
+  "name": "Kestrel",
+  "short_name": "Kestrel",
+  "description": "Report civic issues in seconds. Duplicates merged, severity ranked by community verification, every fix tracked in public.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "en-IN",
+  "background_color": "#F6F7FB",
+  "theme_color": "#0F1638",
+  "categories": [
+    "utilities",
+    "navigation",
+    "government"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
