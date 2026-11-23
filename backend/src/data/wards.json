@@ -1,0 +1,13 @@
+{
+  "note": "Sample ward areas for the demo: a centre point and radius around a real Delhi locality. Not official ward boundaries. A point belongs to the nearest centre within its radius.",
+  "wards": [
+    {"id": "W-CP", "name": "Connaught Place", "nameHi": "कनॉट प्लेस", "agency": "NDMC", "centre": [77.2167, 28.6315], "radiusM": 1800},
+    {"id": "W-KB", "name": "Karol Bagh", "nameHi": "करोल बाग", "agency": "MCD", "centre": [77.1909, 28.6519], "radiusM": 1800},
+    {"id": "W-CC", "name": "Chandni Chowk", "nameHi": "चांदनी चौक", "agency": "MCD", "centre": [77.2303, 28.6506], "radiusM": 1500},
+    {"id": "W-LN", "name": "Lajpat Nagar", "nameHi": "लाजपत नगर", "agency": "MCD", "centre": [77.2433, 28.5677], "radiusM": 1800},
+    {"id": "W-MV", "name": "Mayur Vihar Phase 1", "nameHi": "मयूर विहार फेज़ 1", "agency": "MCD", "centre": [77.2943, 28.6046], "radiusM": 1800},
+    {"id": "W-RH", "name": "Rohini Sector 7", "nameHi": "रोहिणी सेक्टर 7", "agency": "MCD", "centre": [77.1153, 28.7056], "radiusM": 2000},
+    {"id": "W-DW", "name": "Dwarka Sector 10", "nameHi": "द्वारका सेक्टर 10", "agency": "MCD", "centre": [77.0590, 28.5815], "radiusM": 2000},
+    {"id": "W-SK", "name": "Saket", "nameHi": "साकेत", "agency": "MCD", "centre": [77.2066, 28.5245], "radiusM": 1800}
+  ]
+}
