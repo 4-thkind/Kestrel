@@ -12,39 +12,6 @@ Every citizen becomes a sensor, every phone a road scanner. Kestrel turns scatte
 
 ---
 
-## Contents
-
-1. [The problem](#1-the-problem)
-2. [Who we build for](#2-who-we-build-for)
-3. [Why existing solutions fall short](#3-why-existing-solutions-fall-short)
-4. [What Kestrel does](#4-what-kestrel-does)
-5. [The 60-second story](#5-the-60-second-story)
-6. [How it works](#6-how-it-works)
-7. [Issue categories](#7-issue-categories)
-8. [Duplicate fusion](#8-duplicate-fusion)
-9. [Community verification and severity](#9-community-verification-and-severity)
-10. [Public resolution tracking](#10-public-resolution-tracking)
-11. [Ward officer console](#11-ward-officer-console)
-12. [Hazard-aware routing](#12-hazard-aware-routing)
-13. [Edge AI road vision](#13-edge-ai-road-vision)
-14. [Built for Bharat](#14-built-for-bharat)
-15. [Architecture](#15-architecture)
-16. [Data model](#16-data-model)
-17. [API](#17-api)
-18. [Trust, safety and privacy](#18-trust-safety-and-privacy)
-19. [Run it locally](#19-run-it-locally)
-20. [Deploy](#20-deploy)
-21. [Tests](#21-tests)
-22. [Configuration](#22-configuration)
-23. [Repository layout](#23-repository-layout)
-24. [Build status and roadmap](#24-build-status-and-roadmap)
-25. [Value and adoption](#25-value-and-adoption)
-26. [How Kestrel maps to the judging criteria](#26-how-kestrel-maps-to-the-judging-criteria)
-
-**Status legend used in this README:** ✅ working and tested in this repo · 🔨 being built for the hackathon · 🧭 after the hackathon
-
----
-
 ## 1. The problem
 
 A pothole on a Delhi road is usually not a secret. Dozens of people ride over it every hour. Some of them complain. The complaint goes into a portal, a helpline or a social media post, and from there it disappears.
