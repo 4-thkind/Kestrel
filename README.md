@@ -6,10 +6,15 @@ Every citizen becomes a sensor, every phone a road scanner. Kestrel turns scatte
 
 > Kestrels hover over roadsides and watch everything below. That is the idea: eyes on every street, and nothing reported goes unseen.
 
-**Hackathon:** Build for Bharat, **Track 5: Smarter Cities and Civic Infrastructure**
-**Problem prompt:** *Real-Time Civic Issue Reporting and Resolution Tracking*
-**Live demo:** _coming soon_
-· **Demo video:** https://drive.google.com/drive/folders/1wCwrzuFgD5UlVTBjRdDwEf432Hkj_b9U
+**Hackathon:** Build for Bharat
+
+**Track:** Smarter Cities and Civic Infrastructure (Track 5)
+
+**Problem prompt:** Real-Time Civic Issue Reporting and Resolution Tracking
+
+**Live demo:** Coming soon
+
+**Demo video:** [Watch the demo](https://drive.google.com/drive/folders/1wCwrzuFgD5UlVTBjRdDwEf432Hkj_b9U)
 
 ![Kestrel civic dashboard showing open issues, community reports, category filters, and the neighborhood map](assets/screenshots/civic-dashboard.png)
 
