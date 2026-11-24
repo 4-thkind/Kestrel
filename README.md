@@ -10,10 +10,6 @@ Every citizen becomes a sensor, every phone a road scanner. Kestrel turns scatte
 **Problem prompt:** *Real-Time Civic Issue Reporting and Resolution Tracking*
 **Live demo:** _coming soon_ · **Demo video:** _coming soon_
 
-![Kestrel civic dashboard showing open issues, community reports, category filters, and the neighborhood map](assets/screenshots/civic-dashboard.png)
-
-*The civic dashboard brings local issues, community reports, and public progress into one view. Shown with synthetic demo data.*
-
 ---
 
 **Status legend used in this README:** ✅ working and tested in this repo · 🧭 planned after the hackathon
@@ -332,10 +328,6 @@ flowchart LR
 ## 12. Hazard-aware routing
 
 Routing is Kestrel's answer to *"why should I report?"*: reports protect the reporter and everyone behind them.
-
-![Kestrel ride planner with start and destination selection, vehicle preferences, and route preview controls](assets/screenshots/ride-planner.png)
-
-*Plan a trip in three steps: choose your start and destination, select your vehicle, then review the route. Reported road hazards inform route decisions; the map is not a safety guarantee.*
 
 ```mermaid
 sequenceDiagram
