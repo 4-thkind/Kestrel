@@ -8,8 +8,8 @@
   "display": "standalone",
   "orientation": "portrait",
   "lang": "en-IN",
-  "background_color": "#F6F7FB",
-  "theme_color": "#0F1638",
+  "background_color": "#F6E9D9",
+  "theme_color": "#043222",
   "categories": [
     "utilities",
     "navigation",

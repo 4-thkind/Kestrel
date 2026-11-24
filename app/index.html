@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0F1638" />
+    <meta name="theme-color" content="#043222" />
     <meta name="description" content="Kestrel: report civic issues in seconds, see duplicates merged and ranked by community verification, and track every fix in public." />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
@@ -12,7 +12,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
-    <title>Kestrel</title>
+    <title>Kestrel · Better streets, together</title>
   </head>
   <body>
     <!-- ================= KESTREL: civic issues (default screen) ================= -->
@@ -33,7 +33,7 @@
         <div id="v-wards" class="view" hidden></div>
         <div id="v-officer" class="view" hidden></div>
       </main>
-      <nav id="c-tabs" class="c-tabs" aria-label="Main"></nav>
+      <nav id="c-tabs" class="c-tabs" aria-label="Main navigation"></nav>
     </section>
 
     <!-- ================= PLANNER: map-first (no permissions needed) ================= -->
@@ -41,6 +41,7 @@
       <div id="plan-map" class="plan-map" role="region" aria-label="Route map"></div>
 
       <header class="topbar">
+        <a class="planner-back" href="#/" aria-label="Back to overview">← <span>Overview</span></a>
         <a class="brand" href="#/" title="Back to Kestrel issues">
           <img class="brand-mark" src="/icons/logo-mark.png" alt="" width="34" height="34" />
           <span class="brand-name">Kestrel</span>
@@ -94,16 +95,13 @@
       </button>
       <aside id="sheet" class="sheet" aria-label="Route planner">
         <div class="dock-head">
-          <b>Route</b>
-          <button id="dock-hide" class="dock-hide" type="button" aria-controls="sheet">Hide <span aria-hidden="true">▼</span></button>
+          <div><span class="planner-eyebrow">GET THERE WITH KESTREL</span><h1>Plan your ride</h1></div>
+          <button id="dock-hide" class="dock-hide" type="button" aria-controls="sheet">Minimize <span aria-hidden="true">⌄</span></button>
         </div>
         <div class="sheet-body">
-          <div class="role-row">
-            <span class="eyebrow">Planning as</span>
-            <b id="role-label"></b>
-            <button id="btn-role" class="link" type="button">Change</button>
-          </div>
-          <div id="vehicle-row" class="vehicle-row" role="group" aria-label="Vehicle"></div>
+          <p class="planner-intro">A familiar route. A little more peace of mind.</p>
+          <section class="planner-section" aria-label="Choose your journey">
+          <h2 class="planner-step"><span>1</span> Where are you headed?</h2>
           <div class="od" role="group" aria-label="Start and destination">
             <div class="od-fields">
               <div class="od-row"><span class="od-key od-from">From</span><button id="od-from" class="od-field" type="button">…</button><button id="od-gps" class="od-gps" type="button" aria-label="Use my current location as start" title="Use my current location">◎ GPS</button></div>
@@ -111,27 +109,46 @@
             </div>
             <button id="od-swap" class="od-swap secondary" type="button" aria-label="Swap start and destination">⇅</button>
           </div>
+          </section>
+          <section class="planner-section" aria-label="Travel preferences">
+          <h2 class="planner-step"><span>2</span> How are you travelling?</h2>
+          <div class="role-row">
+            <span class="eyebrow">Planning as</span>
+            <b id="role-label"></b>
+            <button id="btn-role" class="link" type="button">Change</button>
+          </div>
+          <div id="vehicle-row" class="vehicle-row" role="group" aria-label="Vehicle"></div>
+          </section>
+          <section class="planner-section route-section" aria-label="Route options">
+          <h2 class="planner-step"><span>3</span> Your route</h2>
           <button id="btn-preset" class="link" type="button" hidden data-i18n="presetRoute">Preset route</button>
           <button id="btn-demo-water" class="secondary small" type="button" hidden data-i18n="demoWater">Demo: camera sees water at the underpass</button>
 
           <div id="decision-card" class="card" aria-live="polite"></div>
           <p id="update-note" class="fineprint" aria-live="polite"></p>
 
-          <div class="actions">
+          <div class="actions journey-actions">
             <button id="btn-ride" class="go" type="button" data-i18n="startRide">Start ride</button>
             <button id="btn-nav" class="secondary" type="button" data-i18n="startNav">Preview route</button>
           </div>
           <ul id="route-cards" class="route-cards"></ul>
+          </section>
+          <details class="planner-tools">
+            <summary>Trip tools <span>Details, reports &amp; sharing</span></summary>
           <div class="actions">
             <button id="btn-why" class="secondary" type="button" data-i18n="why">Why this route?</button>
             <button id="btn-report" class="secondary" type="button" data-i18n="report">Report conditions</button>
             <button id="btn-compare" class="secondary" type="button" data-i18n="compare">Compare routes</button>
             <button id="btn-share" class="secondary" type="button" data-i18n="share">Share trip</button>
-            <button id="btn-sos" class="sos" type="button" data-i18n="sos">SOS</button>
+
           </div>
+          </details>
+          <details class="planner-tools camera-tools"><summary>Camera settings <span>Calibration &amp; queued reports</span></summary>
           <p id="queue-count" class="fineprint"></p>
           <button id="btn-camera" class="link" type="button" data-i18n="camera">Camera calibration</button>
-          <p class="fineprint">Routes avoid open civic hazards reported on Kestrel, plus the reviewed Minto Bridge underpass corridor. Map data © OpenStreetMap contributors.</p>
+          </details>
+          <div class="planner-help"><a href="#/report">+ Report a civic issue</a><button id="btn-sos" class="sos" type="button" data-i18n="sos">SOS</button></div>
+          <p class="fineprint planner-disclaimer">Routes consider reported hazards. Conditions can change; stay aware as you travel. Map data © OpenStreetMap contributors.</p>
         </div>
       </aside>
     </section>
@@ -139,6 +156,7 @@
     <!-- ================= WELCOME: who are you? ================= -->
     <section id="screen-welcome" class="overlay hidden" aria-label="Choose how you travel">
       <div class="overlay-panel welcome">
+        <div class="dialog-nav"><span>KESTREL / TRAVEL PROFILE</span><button type="button" data-close-overlay aria-label="Back to route planner">← Back to planner</button></div>
         <div class="brand big">
           <img class="brand-mark" src="/icons/logo-mark.png" alt="" width="48" height="48" />
           <span class="brand-name">Kestrel</span>
@@ -159,6 +177,7 @@
     <!-- ================= PLACE: edit start / destination ================= -->
     <section id="screen-place" class="overlay hidden" aria-label="Choose a place">
       <div class="overlay-panel">
+        <div class="dialog-nav"><span>KESTREL / CHOOSE A PLACE</span><button type="button" data-close-overlay aria-label="Back to route planner">← Back to planner</button></div>
         <h2 id="place-title">Change destination</h2>
         <form id="place-form" class="place-form" role="search">
           <input id="place-q" type="search" placeholder="Search a place in Delhi" autocomplete="off" maxlength="100" />
@@ -180,6 +199,7 @@
     <!-- ================= REPORT (overlay) ================= -->
     <section id="screen-report" class="overlay hidden" aria-label="Report conditions">
       <div class="overlay-panel">
+        <div class="dialog-nav"><span>KESTREL / ROAD CONDITIONS</span><button type="button" data-close-overlay aria-label="Back to route planner">← Back to planner</button></div>
         <h2 data-i18n="report">Report conditions</h2>
         <p class="fineprint">Report only while stopped somewhere safe. Never go into water to check it.</p>
 
@@ -243,6 +263,7 @@
     <!-- ================= EVIDENCE (overlay) ================= -->
     <section id="screen-evidence" class="overlay hidden" aria-label="Why this route">
       <div class="overlay-panel">
+        <div class="dialog-nav"><span>KESTREL / ROUTE DETAILS</span><button type="button" data-close-overlay aria-label="Back to route planner">← Back to planner</button></div>
         <h2 data-i18n="why">Why this route?</h2>
         <div id="evidence-body" class="card"></div>
         <button id="btn-ev-back" class="secondary" type="button" data-i18n="back">Back</button>
@@ -252,6 +273,7 @@
     <!-- ================= SOS (overlay) ================= -->
     <section id="screen-sos" class="overlay hidden" aria-label="Emergency">
       <div class="overlay-panel">
+        <div class="dialog-nav"><span>KESTREL / GET HELP</span><button type="button" data-close-overlay aria-label="Back to route planner">← Back to planner</button></div>
         <h2>Emergency and breakdown help</h2>
         <p class="fineprint">Calls go through your phone's dialer. Public Indian / Delhi helplines - verify locally before relying on them.</p>
         <a class="sos-link" href="tel:112"><b>112</b> National emergency</a>
@@ -319,7 +341,8 @@
 
     <!-- ================= SUMMARY ================= -->
     <section id="screen-summary" class="screen hidden dark">
-      <h2>Ride summary</h2>
+      <div class="dialog-nav"><span>KESTREL / YOUR JOURNEY</span><button type="button" data-close-overlay aria-label="Back to route planner">← Back to planner</button></div>
+      <header class="screen-heading"><p class="screen-eyebrow">YOUR JOURNEY, AT A GLANCE</p><h2>Ride summary</h2><p>Your trip, the road conditions, and the moments you saved.</p></header>
       <div class="status-grid">
         <div class="status"><span class="status-key">Duration</span><b id="sum-duration">—</b></div>
         <div class="status"><span class="status-key">Distance</span><b id="sum-distance">—</b></div>
@@ -339,16 +362,17 @@
 
     <!-- ================= SETTINGS ================= -->
     <section id="screen-settings" class="screen hidden dark">
-      <h2>Camera settings and calibration</h2>
-      <p class="fineprint">
-        The camera runs two models: a pothole detector (YOLOv8n) and a water segmentation model (SegFormer-b0).
-        Distance and depth estimates assume a flat road; match these to your bike and mount so warnings arrive at the right moment.
-      </p>
+      <div class="dialog-nav"><span>KESTREL / PREFERENCES</span><button id="btn-settings-back" class="secondary" type="button">← Back</button></div>
+      <header class="screen-heading"><p class="screen-eyebrow">MAKE IT WORK FOR YOUR RIDE</p><h2>Camera &amp; ride settings</h2><p>Set up your camera, tune warnings, and choose what to share.</p></header>
+      <section class="settings-group"><h3>Check your camera</h3>
+      <details class="settings-info"><summary>How camera estimates work</summary><p class="fineprint">The camera uses pothole detection and water segmentation. Distance and depth estimates assume a flat road; calibrate them to your bike and phone mount.</p></details>
       <label>Test a photo (water and potholes)
         <input id="photo-test" type="file" accept="image/*" />
       </label>
       <p id="photo-result" class="fineprint" aria-live="polite"></p>
       <p class="fineprint">Detector: <b id="st-model">not loaded</b> · Queued pothole reports: <b id="st-queue">0</b></p>
+      </section>
+      <section class="settings-group"><h3>Camera calibration</h3><p class="fineprint">Match these values to your phone mount.</p>
       <label>Camera height above road <output id="out-height">1.00 m</output>
         <input id="in-height" type="range" min="0.5" max="1.6" step="0.05" value="1" />
       </label>
@@ -358,6 +382,8 @@
       <label>Vertical field of view <output id="out-fov">55°</output>
         <input id="in-fov" type="range" min="35" max="80" step="1" value="55" />
       </label>
+      </section>
+      <section class="settings-group"><h3>Warnings &amp; recording</h3>
       <label>Detection confidence <output id="out-score">0.40</output>
         <input id="in-score" type="range" min="0.15" max="0.8" step="0.05" value="0.4" />
       </label>
@@ -367,10 +393,13 @@
       <label>Dashcam buffer <output id="out-buffer">180 s</output>
         <input id="in-buffer" type="range" min="30" max="300" step="30" value="180" />
       </label>
+      </section>
+      <section class="settings-group"><h3>Voice &amp; sharing</h3>
       <label class="row"><input id="in-speech" type="checkbox" checked /> Spoken warnings</label>
       <label class="row"><input id="in-neural" type="checkbox" checked /> Natural voice (online, Python edge-tts on the server; phone voice when offline)</label>
       <label class="row"><input id="in-upload" type="checkbox" /> Share pothole locations with the legacy map (off by default)</label>
-      <button id="btn-settings-back" class="primary" type="button">Back</button>
+      </section>
+      <p class="fineprint settings-saved">Changes are saved automatically on this device.</p>
     </section>
 
     <script type="module" src="/src/main.ts"></script>

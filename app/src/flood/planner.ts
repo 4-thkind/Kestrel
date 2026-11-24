@@ -510,7 +510,7 @@ function renderRoutes(): void {
   list.replaceChildren();
   const d = s.decision;
   const pair = s.preset ? s.view?.pairs[0] : undefined;
-  $("od-from").textContent = s.originName || pair?.origin.name || "Getting your location…";
+  $("od-from").textContent = s.originName || pair?.origin.name || (getLang() === "hi" ? "शुरुआत की जगह चुनें" : "Choose starting point");
   $("od-to").textContent = s.destName || pair?.destination.name || "Choose destination";
   $("btn-preset").hidden = s.preset && !s.origin && !s.destination;
   $("btn-demo-water").hidden = !s.status?.demo || !s.preset;
@@ -685,7 +685,7 @@ async function compare(note?: string): Promise<void> {
     s.compareSeq++;
     s.decision = undefined;
     s.decisionStale = false;
-    s.decisionNote = s.origin ? "Choose your destination: tap To." : "Allow location, or tap the GPS button, to set your start.";
+    s.decisionNote = s.origin ? "Choose a destination above to see your route." : "Choose a starting point above, or use GPS for your current location.";
     renderAll();
     return;
   }
@@ -1225,7 +1225,7 @@ function watchMe(): void {
   navigator.geolocation.watchPosition(
     (p) => startFromFix({ at: [p.coords.longitude, p.coords.latitude], accuracyM: p.coords.accuracy }, false),
     (err) => {
-      if (err.code === err.PERMISSION_DENIED) $("update-note").textContent = "Location is blocked. Allow it in the browser to start from where you are.";
+      if (err.code === err.PERMISSION_DENIED) $("update-note").textContent = "GPS is unavailable. You can still choose your starting point on the map or search for a place.";
     },
     { enableHighAccuracy: true, maximumAge: 10_000 },
   );
