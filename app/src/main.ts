@@ -1,5 +1,6 @@
 import "./style.css";
 import "./civic/civic.css";
+import "./screens.css";
 import { voice } from "./alerts.ts";
 import { Dashcam } from "./dashcam.ts";
 import { Detector } from "./detector.ts";
@@ -189,6 +190,10 @@ function bindSettings(): void {
 // ------------------------------------------------------------------ screens
 const SCREENS = ["civic", "planner", "welcome", "place", "report", "evidence", "sos", "ride", "summary", "settings"] as const;
 type ScreenName = (typeof SCREENS)[number];
+// Every planner dialog has the same keyboard-accessible return control.
+document.querySelectorAll<HTMLButtonElement>("[data-close-overlay]").forEach((button) => {
+  button.addEventListener("click", () => show("planner"));
+});
 /** Panels drawn over the planner map; the map stays visible (and keeps its state) underneath. */
 const OVERLAYS: readonly ScreenName[] = ["welcome", "place", "report", "evidence", "sos"];
 
