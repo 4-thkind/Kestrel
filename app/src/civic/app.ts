@@ -12,11 +12,11 @@ import { showWards } from "./wards.ts";
 
 type View = "home" | "report" | "issue" | "wards" | "officer";
 const TABS: { view: View | "navigate"; href: string; en: string; hi: string; icon: Parameters<typeof icon>[0] }[] = [
-  { view: "home", href: "#/", en: "Issues", hi: "समस्याएँ", icon: "map" },
-  { view: "wards", href: "#/wards", en: "Wards", hi: "वार्ड", icon: "chart" },
-  { view: "report", href: "#/report", en: "Report", hi: "रिपोर्ट", icon: "plus" },
-  { view: "navigate", href: "#/navigate", en: "Ride", hi: "सफ़र", icon: "route" },
-  { view: "officer", href: "#/officer", en: "Officer", hi: "अधिकारी", icon: "shield" },
+  { view: "home", href: "#/", en: "Overview", hi: "समस्याएँ", icon: "map" },
+  { view: "wards", href: "#/wards", en: "Ward scorecards", hi: "वार्ड", icon: "chart" },
+  { view: "report", href: "#/report", en: "Report an issue", hi: "रिपोर्ट", icon: "plus" },
+  { view: "navigate", href: "#/navigate", en: "Safer routes", hi: "सफ़र", icon: "route" },
+  { view: "officer", href: "#/officer", en: "Officer workspace", hi: "अधिकारी", icon: "shield" },
 ];
 
 let openNavigate: () => void = () => {};
@@ -30,7 +30,7 @@ function views(): Record<View, HTMLElement> {
 function renderChrome(active: string): void {
   const nav = document.getElementById("c-tabs")!;
   nav.replaceChildren(...TABS.map((t) => h("a", { href: t.href, class: `c-tab ${t.view === "report" ? "c-tab-report" : ""}`,
-    "aria-current": String(t.view === active) }, icon(t.icon, 22), h("span", {}, L(t.en, t.hi)))));
+    "aria-current": t.view === active ? "page" : "false", title: L(t.en, t.hi) }, icon(t.icon, 22), h("span", {}, L(t.en, t.hi)))));
   document.getElementById("c-lang")!.textContent = getLang() === "hi" ? "EN" : "हिं";
 }
 
@@ -55,6 +55,8 @@ async function route(): Promise<void> {
   else if (view === "issue") await showIssue(v.issue, parts[1] ?? "");
   else if (view === "wards") await showWards(v.wards, parts[1]);
   else await showOfficer(v.officer, parts[1] ?? "");
+  const main = document.querySelector<HTMLElement>(".c-main");
+  if (main) main.scrollTop = 0;
 }
 
 async function badge(): Promise<void> {
