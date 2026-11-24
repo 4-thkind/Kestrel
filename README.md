@@ -26,11 +26,11 @@ What breaks is not reporting. It is everything after reporting:
 - **Severity is invisible.** An open manhole next to a school and a faded road marking sit in the same queue. Officers triage by whoever shouts loudest.
 - **Response is opaque.** Citizens get a ticket number and silence. "Closed" often means the ticket was closed, not that the road was fixed.
 - **Ownership is fragmented.** One street can involve the municipal corporation, the public works department, the water utility, the power distribution company and the traffic police. Citizens do not know who owns which problem, and complaints land at the wrong desk.
-- **The danger is live, the fix is slow.** Even a well-run repair takes days. Meanwhile riders keep hitting the same hazard, at night and in the rain, because their navigation app knows traffic but nothing about the road surface.
+- **The danger is live, the fix is slow.** Even a well-run repair takes days. Meanwhile riders keep hitting the same hazard, day after day, because their navigation app knows traffic but nothing about the road surface.
 
 ## 2. Who we build for
 
-**Daily commuters and two-wheeler riders** hit the same potholes and flooded underpasses every week, and most have stopped complaining because nothing happens. Kestrel lets them report in about ten seconds by voice in Hindi, English or Hinglish, shows them that other people reported the same problem, and routes them around it while it stays open.
+**Daily commuters and two-wheeler riders** hit the same potholes, open manholes and blocked roads every week, and most have stopped complaining because nothing happens. Kestrel lets them report in about ten seconds by voice in Hindi, English or Hinglish, shows them that other people reported the same problem, and routes them around it while it stays open.
 
 **Residents and RWA volunteers** today chase problems by phone, in WhatsApp groups and through repeated complaints. Kestrel gives them one public page per issue, with a timeline they can share, and a vote that actually changes the issue's priority.
 
@@ -378,7 +378,7 @@ flowchart TD
   SUG --> HUMAN["Citizen confirms before anything is sent"]
 ```
 
-The camera **suggests**, the citizen **decides**. A camera detection is never stored as evidence by itself, because neither model has been validated on Indian monsoon or road footage. Detections turn into one-tap report suggestions that a person confirms.
+The camera **suggests**, the citizen **decides**. A camera detection is never stored as evidence by itself, because neither model has been validated on Indian road footage. Detections turn into one-tap report suggestions that a person confirms.
 
 ### Kestrel Vision: one small model that answers many questions
 
@@ -826,7 +826,7 @@ flowchart LR
 ### Known limits
 
 - Reports are claims. Distinct-source counting is pseudonymous and approximate.
-- Camera estimates are heuristics, not validated on Indian monsoon or road footage.
+- Camera estimates are heuristics, not validated on Indian road footage.
 - Ward boundaries and agency ownership in the demo are sample data and need confirmation with the civic body before a real pilot.
 - The demo runs on synthetic data, labelled as such on every screen.
 
