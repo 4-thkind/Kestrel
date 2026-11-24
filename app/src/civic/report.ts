@@ -178,6 +178,7 @@ async function submit(): Promise<void> {
     result = { r: mine ? (mine.result as unknown as WriteResult) : undefined, queued: !mine };
     dispatchEvent(new Event("kestrel:outbox"));
     render();
+    focusStep();
   } catch (err) {
     toast(String(err), "error");
     if (send) send.disabled = false;
@@ -189,9 +190,19 @@ function restart(): void {
   step = 0;
   result = undefined;
   render();
+  focusStep();
 }
 
 // ------------------------------------------------------------------ rendering
+/** Announce a new step and reveal its heading after the previous form was scrolled. */
+function focusStep(): void {
+  const main = root.closest<HTMLElement>(".c-main");
+  if (main) main.scrollTop = 0;
+  const heading = root.querySelector<HTMLElement>(".wiz-step h1");
+  heading?.setAttribute("tabindex", "-1");
+  heading?.focus({ preventScroll: true });
+}
+
 function syncNav(): void {
   const next = root.querySelector<HTMLButtonElement>(".wiz-next");
   if (next) next.disabled = !ready();
@@ -382,13 +393,19 @@ function render(): void {
       step += 1;
       if (step === 3) void loadNearby();
       render();
+      focusStep();
     });
   const back = step > 0 ? btn(L("Back", "पीछे"), "secondary big", () => {
     step -= 1;
     render();
+    focusStep();
   }, { style: "flex:0 0 30%" }) : null;
   root.replaceChildren(h("div", { class: "wiz" },
-    h("div", { class: "wiz-progress", "aria-hidden": "true" }, ...[0, 1, 2, 3].map((i) => h("i", { class: i <= step ? "on" : "" }))),
+    h("div", { class: "wizard-top" }, h("a", { href: "#/", class: "back" }, "← ", L("Overview", "अवलोकन")), h("span", { class: "meta" }, L("Report an issue", "समस्या रिपोर्ट करें"))),
+    h("ol", { class: "report-steps", "aria-label": L("Report progress", "रिपोर्ट प्रगति") },
+      ...[["Problem", "समस्या"], ["Location", "जगह"], ["Details", "जानकारी"], ["Review", "जाँच"]].map(([en, hi], i) =>
+        h("li", { class: i <= step ? "on" : "", ...(i === step ? { "aria-current": "step" } : {}) },
+          h("span", {}, i < step ? "✓" : String(i + 1)), L(en, hi)))),
     body,
     h("div", { class: "wiz-nav" }, ...kids(back, next))));
   syncNav();
