@@ -93,7 +93,7 @@ export async function showIssue(el: HTMLElement, id: string): Promise<void> {
       h("div", { class: "hero-status" },
         h("span", { class: "pill" }, wfLabel(d.workflowState)),
         h("span", { class: "pill" }, `${d.priority} · ${d.score}/100`),
-        d.overdueDays > 0 ? h("span", { class: "pill" }, `${d.overdueDays} ${L("days overdue", "दिन देर")}`) : null),
+        d.overdueDays > 0 ? h("span", { class: "pill" }, `${d.overdueDays} ${L("days overdue", "दिन देरी")}`) : null),
       h("div", { class: "hero-facts" },
         h("div", {}, h("b", {}, String(d.reports)), h("span", {}, L("reports", "रिपोर्ट"))),
         h("div", {}, h("b", {}, String(d.sources)), h("span", {}, L("people", "लोग"))),
@@ -111,14 +111,14 @@ export async function showIssue(el: HTMLElement, id: string): Promise<void> {
             btn(h("span", {}, icon("check", 18), L("It's fixed", "ठीक हो गया")), "vote-fixed", () => void vote(d, "FIXED", el))),
           h("p", { class: "fineprint" }, d.workflowState === "RESOLVED"
             ? L("The ward marked this resolved. It closes only when two people confirm the fix; two 'still there' votes reopen it.",
-              "वार्ड ने हल बताया। दो लोगों की पुष्टि पर ही बंद होगा; दो 'अभी भी है' पर फिर खुलेगा।")
-            : L("Votes count once per person. Two 'fixed' votes clear it.", "हर व्यक्ति एक बार गिना जाता है।"))) : null,
+              "वार्ड ने इसे सुलझा हुआ बताया। दो लोगों की पुष्टि पर ही बंद होगा; दो 'अभी भी है' पर फिर खुलेगा।")
+            : L("Votes count once per person. Two 'fixed' votes clear it.", "हर व्यक्ति का वोट एक बार गिना जाता है। दो 'ठीक' वोट इसे हटा देते हैं।"))) : null,
         h("section", { class: "card" }, h("h2", {}, L("How urgent", "कितना ज़रूरी")), severityBars(d)),
         h("section", { class: "card" }, h("h2", {}, L("Evidence", "सबूत")),
           h("p", {}, h("b", {}, L(...EVIDENCE_LABEL[d.evidenceState]))),
           h("p", { class: "meta" }, `${d.reports} ${L("reports", "रिपोर्ट")} · ${d.sources} ${L("different people", "अलग लोग")} · ${d.photos} ${L("photos", "फ़ोटो")}`),
           d.details.length ? h("div", { class: "tags" }, ...d.details.map((x) => h("span", { class: "tag" }, L(...(DETAIL_LABEL[x] ?? [x, x]) as [string, string])))) : null,
-          d.blocksRoute ? h("p", { class: "routes-flag" }, icon("route", 16), L(" Kestrel routes avoid this spot while it is open.", " खुला रहने तक Kestrel रास्ते इससे बचते हैं।")) : null,
+          d.blocksRoute ? h("p", { class: "routes-flag" }, icon("route", 16), L(" Kestrel routes avoid this spot while it is open.", " जब तक यह खुला है, Kestrel रास्ते इस जगह से बचते हैं।")) : null,
           h("p", { class: "fineprint" }, L("Reports are claims from citizens, not measurements.", "रिपोर्ट नागरिकों के दावे हैं, माप नहीं।"))),
         h("section", { class: "card", id: "vision-checks", hidden: "" }, h("h2", {}, "Kestrel Vision")),
         photos.length ? h("section", { class: "card" }, h("h2", {}, L("Photos", "फ़ोटो")),
@@ -145,8 +145,8 @@ async function visionChecks(d: IssueDetail, box: HTMLElement): Promise<void> {
     if (after) {
       const p = await stillThere(await loadImage(after));
       rows.push(h("p", { class: `vision-check ${p >= 0.5 ? "bad" : "good"}` }, icon(p >= 0.5 ? "x" : "check", 16),
-        p >= 0.5 ? L(`The after-photo still looks like a problem (${likelihood(p)}). Citizen votes decide.`, `मरम्मत के बाद की फ़ोटो में अब भी समस्या दिखती है (${likelihood(p)})।`)
-          : L(`The after-photo looks fixed (${likelihood(1 - p)}). Citizen votes still decide.`, `मरम्मत के बाद की फ़ोटो ठीक लगती है (${likelihood(1 - p)})।`)));
+        p >= 0.5 ? L(`The after-photo still looks like a problem (${likelihood(p)}). Citizen votes decide.`, `मरम्मत के बाद की फ़ोटो में अब भी समस्या दिखती है (${likelihood(p)})। नागरिक वोट तय करते हैं।`)
+          : L(`The after-photo looks fixed (${likelihood(1 - p)}). Citizen votes still decide.`, `मरम्मत के बाद की फ़ोटो ठीक लगती है (${likelihood(1 - p)})। नागरिक वोट अब भी तय करते हैं।`)));
     }
     if (citizen.length >= 2) {
       const embs = [];
@@ -160,6 +160,6 @@ async function visionChecks(d: IssueDetail, box: HTMLElement): Promise<void> {
     console.warn("[vision]", err);
     return;
   }
-  box.append(...rows, h("p", { class: "fineprint" }, L("Computed on this device by a small open model. A hint, never a decision.", "इस डिवाइस पर गणना। संकेत मात्र, फ़ैसला नहीं।")));
+  box.append(...rows, h("p", { class: "fineprint" }, L("Computed on this device by a small open model. A hint, never a decision.", "इस डिवाइस पर एक छोटे ओपन मॉडल से गणना। संकेत मात्र, फ़ैसला नहीं।")));
   box.hidden = false;
 }
