@@ -21,11 +21,11 @@ let selected: string | undefined;
 
 function actionForm(d: IssueDetail, queue: IssueSummary[], refresh: () => Promise<void>): HTMLElement {
   const actions = ACTIONS_FOR[d.workflowState] ?? [];
-  if (!actions.length) return h("p", { class: "muted" }, L("Waiting for citizens to confirm. No action needed.", "नागरिक पुष्टि का इंतज़ार।"));
+  if (!actions.length) return h("p", { class: "muted" }, L("Waiting for citizens to confirm. No action needed.", "नागरिकों की पुष्टि का इंतज़ार। कोई कार्रवाई ज़रूरी नहीं।"));
   let action = actions[0];
   let photo: { contentType: "image/jpeg"; data: string } | undefined;
   const team = h("select", { id: "off-team" }, ...TEAMS.map((t) => h("option", {}, t))) as HTMLSelectElement;
-  const note = h("textarea", { rows: "2", maxlength: "500", placeholder: L("Public note (shown on the issue page)", "सार्वजनिक नोट") }) as HTMLTextAreaElement;
+  const note = h("textarea", { rows: "2", maxlength: "500", placeholder: L("Public note (shown on the issue page)", "सार्वजनिक नोट (समस्या पेज पर दिखेगा)") }) as HTMLTextAreaElement;
   const target = h("select", {}, ...queue.filter((q) => q.issueId !== d.issueId && q.category === d.category)
     .map((q) => h("option", { value: q.issueId }, `${q.issueId} · ${q.place ?? ""}`))) as HTMLSelectElement;
   const photoIn = h("input", { type: "file", accept: "image/*", capture: "environment" }) as HTMLInputElement;
@@ -39,8 +39,8 @@ function actionForm(d: IssueDetail, queue: IssueSummary[], refresh: () => Promis
       const p = await stillThere(await loadImage("data:image/jpeg;base64," + photo.data));
       check.className = `vision-check ${p >= 0.5 ? "bad" : "good"}`;
       check.textContent = p >= 0.5
-        ? L(`Kestrel Vision: this still looks like a problem (${likelihood(p)}). Citizens will see this check.`, `यह अब भी समस्या जैसा लगता है (${likelihood(p)})।`)
-        : L(`Kestrel Vision: looks fixed (${likelihood(1 - p)}).`, `ठीक लगता है (${likelihood(1 - p)})।`);
+        ? L(`Kestrel Vision: this still looks like a problem (${likelihood(p)}). Citizens will see this check.`, `Kestrel Vision: यह अब भी समस्या जैसा लगता है (${likelihood(p)})। नागरिकों को यह जाँच दिखेगी।`)
+        : L(`Kestrel Vision: looks fixed (${likelihood(1 - p)}).`, `Kestrel Vision: ठीक लगता है (${likelihood(1 - p)})।`);
       check.hidden = false;
     } catch {
       check.hidden = true;
@@ -49,8 +49,8 @@ function actionForm(d: IssueDetail, queue: IssueSummary[], refresh: () => Promis
   const fields = h("div", { class: "off-fields" });
   const renderFields = () => fields.replaceChildren(...kids(
     action === "ASSIGN" ? h("label", {}, L("Team or agency", "टीम या एजेंसी"), team) : null,
-    action === "MERGE" ? h("label", {}, L("Duplicate of", "इसका डुप्लिकेट"), target) : null,
-    action === "RESOLVE" ? h("label", {}, L("After-photo of the fixed site", "मरम्मत के बाद की फ़ोटो"), photoIn) : null,
+    action === "MERGE" ? h("label", {}, L("Duplicate of", "किसका डुप्लिकेट"), target) : null,
+    action === "RESOLVE" ? h("label", {}, L("After-photo of the fixed site", "मरम्मत के बाद ठीक हुए स्थान की फ़ोटो"), photoIn) : null,
     action === "RESOLVE" ? check : null,
     h("label", {}, L("Note", "नोट") + (action === "RESOLVE" || action === "REJECT" ? " *" : ""), note)));
   const tabs = h("div", { class: "seg" }, ...actions.map((a) => {
@@ -91,7 +91,7 @@ function aiBrief(id: string): HTMLElement {
     box.replaceChildren(
       h("p", { class: "ai-brief-head" }, h("b", {}, L("AI brief", "AI सारांश")), h("span", { class: "meta" }, ` · Covexcode ${brief.modelId} · ${brief.notes} ${L("citizen notes", "नागरिक टिप्पणियाँ")}`)),
       h("p", {}, L(brief.en, brief.hi ?? brief.en)),
-      h("p", { class: "fineprint" }, L("Summarised from what citizens wrote. Check the reports before acting.", "नागरिकों के लिखे से सारांश। कार्रवाई से पहले रिपोर्ट देखें।")));
+      h("p", { class: "fineprint" }, L("Summarised from what citizens wrote. Check the reports before acting.", "नागरिकों की लिखी बातों का सारांश। कार्रवाई से पहले रिपोर्ट देखें।")));
   }).catch(() => box.remove());
   return box;
 }
@@ -125,7 +125,7 @@ export async function showOfficer(el: HTMLElement, wardId?: string): Promise<voi
     el.replaceChildren(h("div", { class: "page" },
       h("header", { class: "page-head" }, h("h1", {}, L("Ward officer console", "वार्ड अधिकारी कंसोल")),
         h("p", { class: "muted" }, L("Demo sign-in: pick a ward to act as its officer. Real pilots use a ward-scoped login.",
-          "डेमो: वार्ड चुनें। असली पायलट में वार्ड-लॉगिन होगा।"))),
+          "डेमो साइन-इन: उस वार्ड के अधिकारी बनने के लिए वार्ड चुनें। असली पायलट में वार्ड-सीमित लॉगिन होता है।"))),
       h("div", { class: "ward-grid" }, ...wards.map((w) => h("a", { class: "card ward-pick", href: `#/officer/${w.id}` },
         h("h2", {}, L(w.name, w.nameHi)), h("p", { class: "meta" }, `${w.agency} · ${w.scorecard.openIssues} ${L("open", "खुली")} · ${w.scorecard.openByPriority.P1} P1`))))));
     return;
@@ -149,7 +149,7 @@ export async function showOfficer(el: HTMLElement, wardId?: string): Promise<voi
           priorityChip(i.priority, i.score),
           h("span", {}, `${i.reports} · ${i.sources}👤`),
           h("span", { class: `wf wf-${i.workflowState.toLowerCase()}` }, wfLabel(i.workflowState),
-            i.overdueDays > 0 ? h("small", { class: "overdue" }, ` ${i.overdueDays}${L("d late", " दिन देर")}`) : h("small", {}, " " + ago(i.openedAt)))),
+            i.overdueDays > 0 ? h("small", { class: "overdue" }, ` ${i.overdueDays}${L("d late", " दिन देरी")}`) : h("small", {}, " " + ago(i.openedAt)))),
           `q-row ${selected === i.issueId ? "sel" : ""}`, () => {
             selected = i.issueId;
             for (const r of list.querySelectorAll(".q-row")) r.classList.toggle("sel", r === row);
@@ -166,13 +166,13 @@ export async function showOfficer(el: HTMLElement, wardId?: string): Promise<voi
   };
   el.replaceChildren(h("div", { class: "page wide" },
     h("header", { class: "page-head row" },
-      h("div", {}, h("p", { class: "eyebrow" }, `${w.agency} · ${L("signed in as ward officer (demo)", "वार्ड अधिकारी (डेमो)")}`),
+      h("div", {}, h("p", { class: "eyebrow" }, `${w.agency} · ${L("signed in as ward officer (demo)", "वार्ड अधिकारी के रूप में साइन इन (डेमो)")}`),
         h("h1", {}, L(w.name, w.nameHi))),
       h("a", { class: "secondary", href: "#/officer/" }, L("Switch ward", "वार्ड बदलें"))),
     h("div", { class: "metrics" },
       h("div", { class: "metric p1" }, h("b", {}, String(w.scorecard.openByPriority.P1)), h("span", {}, "P1")),
       h("div", { class: "metric" }, h("b", {}, String(w.scorecard.openIssues)), h("span", {}, L("open", "खुली"))),
-      h("div", { class: `metric ${w.scorecard.overdue ? "warn" : ""}` }, h("b", {}, String(w.scorecard.overdue)), h("span", {}, L("overdue", "देर")))),
+      h("div", { class: `metric ${w.scorecard.overdue ? "warn" : ""}` }, h("b", {}, String(w.scorecard.overdue)), h("span", {}, L("overdue", "समय पार")))),
     wardPulse(w.id, civicApi.pulse),
     h("div", { class: "off-layout" }, list, box)));
   await refresh();

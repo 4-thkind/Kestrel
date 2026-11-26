@@ -26,11 +26,11 @@ function card(w: Ward, rank: number): HTMLElement {
       h("i", { style: `width:${Math.round((s.confirmedFixRate ?? 0) * 100)}%` })),
     h("div", { class: "metrics" },
       metric(String(s.openIssues), L("open", "खुली"), ""),
-      metric(String(s.openByPriority.P1), L("urgent", "अति आवश्यक"), "", s.openByPriority.P1 ? "p1" : ""),
-      metric(String(s.overdue), L("overdue", "देर"), "", s.overdue ? "warn" : ""),
+      metric(String(s.openByPriority.P1), L("urgent", "अत्यावश्यक"), "", s.openByPriority.P1 ? "p1" : ""),
+      metric(String(s.overdue), L("overdue", "समय पार"), "", s.overdue ? "warn" : ""),
       metric(pct(s.confirmedFixRate), L("fixes confirmed", "पुष्ट मरम्मत"),
         L("Citizen-confirmed fixes ÷ (confirmed + unconfirmed closures + reopens)", "नागरिक-पुष्ट / कुल")),
-      metric(s.medianDaysToResolve === null ? "—" : `${s.medianDaysToResolve}d`, L("median fix time", "औसत समय"), "")));
+      metric(s.medianDaysToResolve === null ? "—" : `${s.medianDaysToResolve}d`, L("median fix time", "मरम्मत का माध्यिका समय"), "")));
 }
 
 /** Higher is better: confirmed fixes, few urgent and overdue issues. */
@@ -51,10 +51,10 @@ export async function showWards(el: HTMLElement, wardId?: string): Promise<void>
     el.replaceChildren(h("div", { class: "page" },
       h("header", { class: "page-head" }, h("h1", {}, L("Ward scorecards", "वार्ड स्कोरकार्ड")),
         h("p", { class: "muted" }, L("A fix counts only when citizens confirm it. Reopens and overdue issues count against a ward.",
-          "मरम्मत तभी गिनी जाती है जब नागरिक पुष्टि करें। दोबारा खुलना और देरी वार्ड के ख़िलाफ़ गिने जाते हैं।"))),
+          "मरम्मत तभी गिनी जाती है जब नागरिक उसकी पुष्टि करें। दोबारा खुलने वाली और समय पर न सुलझी समस्याएँ वार्ड के ख़िलाफ़ गिनी जाती हैं।"))),
       h("div", { class: "ward-grid" }, ...ranked.map((w, i) => card(w, i + 1))),
       h("p", { class: "fineprint" }, L("Sample ward areas around real localities, not official boundaries. Demo data is synthetic.",
-        "असली इलाकों के आसपास नमूना क्षेत्र, आधिकारिक सीमा नहीं। डेमो डेटा कृत्रिम है।"))));
+        "असली इलाकों के आसपास वार्डों के नमूना क्षेत्र, आधिकारिक सीमाएँ नहीं। डेमो डेटा कृत्रिम है।"))));
     return;
   }
   const w = wards.find((x) => x.id === wardId);
