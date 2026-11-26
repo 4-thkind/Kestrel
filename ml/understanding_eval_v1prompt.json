@@ -1,0 +1,83 @@
+{
+ "model": "deepseek-v4-flash",
+ "texts": 1428,
+ "grid": {
+  "categories": [
+   "POTHOLE",
+   "WATERLOGGING",
+   "OPEN_MANHOLE",
+   "BLOCKED_ROAD",
+   "GARBAGE_DUMP",
+   "STREETLIGHT_OUT"
+  ],
+  "languages": [
+   "en",
+   "hi",
+   "hinglish"
+  ],
+  "styles": [
+   "formal",
+   "angry",
+   "voice",
+   "short"
+  ]
+ },
+ "rules": {
+  "accuracy": 0.516,
+  "noAnswer": 0.36,
+  "byLanguage": {
+   "en": 0.438,
+   "hi": 0.585,
+   "hinglish": 0.527
+  },
+  "byStyle": {
+   "angry": 0.506,
+   "formal": 0.497,
+   "short": 0.464,
+   "voice": 0.6
+  },
+  "byCategory": {
+   "BLOCKED_ROAD": 0.383,
+   "GARBAGE_DUMP": 0.646,
+   "OPEN_MANHOLE": 0.346,
+   "POTHOLE": 0.271,
+   "STREETLIGHT_OUT": 0.642,
+   "WATERLOGGING": 0.816
+  }
+ },
+ "covexcode": {
+  "accuracy": 0.839,
+  "noAnswer": 0.029,
+  "byLanguage": {
+   "en": 0.848,
+   "hi": 0.838,
+   "hinglish": 0.831
+  },
+  "byStyle": {
+   "angry": 0.867,
+   "formal": 0.875,
+   "short": 0.701,
+   "voice": 0.914
+  },
+  "byCategory": {
+   "BLOCKED_ROAD": 0.825,
+   "GARBAGE_DUMP": 0.912,
+   "OPEN_MANHOLE": 0.779,
+   "POTHOLE": 0.642,
+   "STREETLIGHT_OUT": 0.926,
+   "WATERLOGGING": 0.954
+  }
+ },
+ "covexcodeLatencyMs": {
+  "median": 4682,
+  "p90": 13001
+ },
+ "tokensUsed": 1795971,
+ "teamKeys": 3,
+ "callsPerKey": {
+  "key 1": 518,
+  "key 2": 501,
+  "key 3": 524
+ },
+ "caveat": "The same model family wrote and read the texts, so the model score is likely optimistic. Labels are the requested grid cell."
+}
