@@ -18,7 +18,7 @@ from domain.geometry import DELHI_BBOX, distance_m, line_intersects_polygon, poi
 from domain.policy import POLICY_VERSION, Policy, check_clear_review, evaluate, iso
 from domain.extract import detect_category, detect_details
 from domain.validation import ApiError, payload_hash, validate_observation
-from providers import bedrock, external
+from providers import bedrock, covexcode, external
 from storage.local import DuplicateEvent, RevisionConflict
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
@@ -173,6 +173,7 @@ class Service:
                 "routing": self.cfg.route_provider,
                 "reviewerActions": bool(self.cfg.demo_admin_key) if self.cfg.is_demo else True,
                 "textExtraction": "bedrock" if os.environ.get("BEDROCK_MODEL_ID") else "rules",
+                "reportUnderstanding": "covexcode" if covexcode.configured() else "rules",
                 "weather": "open-meteo",
                 "dynamicRouting": "google-routes+osrm-fallback" if os.environ.get("GOOGLE_MAPS_API_KEY") else "osrm-public",
             },
@@ -408,6 +409,12 @@ class Service:
         result["inPilot"] = result["location_matched"] in self.hotspot_ids
         result["suggestedCategory"] = detect_category(body["text"])
         result["suggestedDetails"] = detect_details(body["text"])
+        # Covexcode reads any phrasing; its answer is validated against Kestrel's lists, rules stay the fallback
+        understood = covexcode.understand(body["text"])
+        if understood:
+            result["suggestedCategory"] = understood["category"] or result["suggestedCategory"]
+            result["suggestedDetails"] = understood["details"]
+        result["understanding"] = understood or {"method": "rules"}
         return result
 
     def geocode(self, q: str | None, near: str | None = None) -> dict:
