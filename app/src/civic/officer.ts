@@ -3,7 +3,7 @@
 import { ApiFailure } from "../flood/api.ts";
 import { civicApi, type IssueDetail, type IssueSummary, type Ward } from "./api.ts";
 import { loadImage, stillThere } from "./vision.ts";
-import { L, ago, btn, likelihood, catBadge, catLabel, compressPhoto, fmtDate, h, kids, priorityChip, toast, wfLabel } from "./ui.ts";
+import { L, ago, btn, likelihood, catBadge, catLabel, compressPhoto, fmtDate, h, kids, priorityChip, toast, wardPulse, wfLabel } from "./ui.ts";
 
 const TEAMS = ["Road maintenance division", "Sanitation team", "Electrical maintenance team", "Sewer maintenance team",
   "Drainage team", "Horticulture and malba removal team", "Ward civil team"];
@@ -83,6 +83,19 @@ function actionForm(d: IssueDetail, queue: IssueSummary[], refresh: () => Promis
   return h("div", { class: "off-form" }, tabs, fields, go);
 }
 
+/** Covexcode condenses every citizen description into a two-language brief; it fills in when ready. */
+function aiBrief(id: string): HTMLElement {
+  const box = h("div", { class: "ai-brief" }, h("p", { class: "meta" }, L("AI brief loading…", "AI सारांश लोड हो रहा है…")));
+  civicApi.brief(id, ward).then(({ brief }) => {
+    if (!brief) return box.remove();
+    box.replaceChildren(
+      h("p", { class: "ai-brief-head" }, h("b", {}, L("AI brief", "AI सारांश")), h("span", { class: "meta" }, ` · Covexcode ${brief.modelId} · ${brief.notes} ${L("citizen notes", "नागरिक टिप्पणियाँ")}`)),
+      h("p", {}, L(brief.en, brief.hi ?? brief.en)),
+      h("p", { class: "fineprint" }, L("Summarised from what citizens wrote. Check the reports before acting.", "नागरिकों के लिखे से सारांश। कार्रवाई से पहले रिपोर्ट देखें।")));
+  }).catch(() => box.remove());
+  return box;
+}
+
 async function detail(box: HTMLElement, id: string, queue: IssueSummary[], refresh: () => Promise<void>): Promise<void> {
   const d = await civicApi.issue(id);
   box.replaceChildren(...kids(
@@ -95,6 +108,7 @@ async function detail(box: HTMLElement, id: string, queue: IssueSummary[], refre
     d.observations.some((o) => o.photoUrl) ? h("div", { class: "photos" }, ...d.observations.filter((o) => o.photoUrl)
       .map((o) => h("img", { src: o.photoUrl!, alt: o.source }))) : null,
     h("ul", { class: "quotes" }, ...d.observations.filter((o) => o.description).slice(-3).map((o) => h("li", {}, `“${o.description}” `, h("span", { class: "meta" }, o.source)))),
+    aiBrief(d.issueId),
     actionForm(d, queue, refresh),
     h("a", { class: "link", href: `#/i/${d.issueId}` }, L("Open public page", "सार्वजनिक पेज खोलें"))));
 }
@@ -159,6 +173,7 @@ export async function showOfficer(el: HTMLElement, wardId?: string): Promise<voi
       h("div", { class: "metric p1" }, h("b", {}, String(w.scorecard.openByPriority.P1)), h("span", {}, "P1")),
       h("div", { class: "metric" }, h("b", {}, String(w.scorecard.openIssues)), h("span", {}, L("open", "खुली"))),
       h("div", { class: `metric ${w.scorecard.overdue ? "warn" : ""}` }, h("b", {}, String(w.scorecard.overdue)), h("span", {}, L("overdue", "देर")))),
+    wardPulse(w.id, civicApi.pulse),
     h("div", { class: "off-layout" }, list, box)));
   await refresh();
 }
