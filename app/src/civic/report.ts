@@ -135,14 +135,20 @@ function listen(): void {
 
 async function understand(): Promise<void> {
   if (f.text.trim().length < 3) return;
+  f.hint = L("Reading your report…", "आपकी रिपोर्ट पढ़ रहे हैं…");
+  render();
   try {
     const d = await civicApi.draft(f.text, citizenId());
+    const u = d.understanding;
+    if (u?.method === "covexcode" && u.place && !f.place.trim()) f.place = u.place;
     if (d.suggestedCategory) {
       f.category = d.suggestedCategory;
       for (const det of d.suggestedDetails) if (DETAILS_FOR[d.suggestedCategory].includes(det)) f.details.add(det);
       f.hint = L("We understood: ", "हमने समझा: ") + catLabel(d.suggestedCategory) +
         (d.suggestedDetails.length ? " · " + d.suggestedDetails.map((x) => L(...DETAIL_LABEL[x] as [string, string])).join(", ") : "") +
-        L(". Change it if that's wrong.", "। गलत हो तो बदलें।");
+        L(". Change it if that's wrong.", "। गलत हो तो बदलें।") +
+        (u?.method === "covexcode" && (u.summaryEn || u.summaryHi) ? `
+${L(u.summaryEn ?? "", u.summaryHi ?? u.summaryEn ?? "")}` : "");
     } else {
       f.hint = L("Couldn't tell the problem type from that. Pick one below.", "प्रकार समझ नहीं आया। नीचे चुनें।");
     }
