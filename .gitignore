@@ -46,3 +46,6 @@ work on these to fix things using this.md
 # demo and explainer videos with their build scripts: kept locally, never committed
 demo video/
 project explanation/
+
+# evaluation run logs
+ml/*.log
