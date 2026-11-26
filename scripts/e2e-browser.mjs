@@ -235,7 +235,9 @@ await click("#btn-home");
 
 // Hindi toggle
 await click("#btn-lang");
-ok("hindi strings applied", (await text("#btn-compare")).includes("रास्ते"));
+// the redesign keeps these controls inside collapsed <details> ("Trip tools"), where innerText is empty: read textContent
+const content = (sel) => js(`document.querySelector(${JSON.stringify(sel)})?.textContent ?? ""`);
+ok("hindi strings applied", (await content("#btn-compare")).includes("तुलना"));
 await click("#btn-lang");
 
 // offline reload: cached snapshot labelled, not live
@@ -256,10 +258,10 @@ await js(`document.querySelector('input[value="NO_WATER_OBSERVED"]').click()`);
 await click("#btn-rep-next");
 await click("#btn-rep-submit");
 await sleep(500);
-ok("offline report stays queued", (await text("#queue-count")).includes("1"), await text("#queue-count"));
+ok("offline report stays queued", (await content("#queue-count")).includes("1"), await content("#queue-count"));
 await send("Network.emulateNetworkConditions", { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
 await js(`dispatchEvent(new Event("online"))`);
-await waitFor(`document.querySelector("#queue-count").innerText.includes(": 0")`, 15000);
+await waitFor(`document.querySelector("#queue-count").textContent.includes(": 0")`, 15000);
 ok("queued report delivered after reconnect", true, await text("#rep-results"));
 
 // cross-client: another client's reports reach this stopped page through polling alone
