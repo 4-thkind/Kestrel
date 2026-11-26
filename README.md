@@ -712,7 +712,7 @@ DEMO_ADMIN_KEY=<same key> python ../scripts/demo.py --api <AppUrl> smoke
 
 ## 21. Tests
 
-**Backend: `python -m unittest discover -s backend/tests -v`** runs 101 tests, and all 101 pass. ✅
+**Backend: `python -m unittest discover -s backend/tests -v`** runs 109 tests, and all 109 pass. ✅
 - For the civic layer they cover:
   - fusion radius per category, joining a picked issue, counting the same source once and placing the centre from distinct sources;
   - retries and `409`, strict validation and photos;
@@ -754,6 +754,7 @@ See [.env.example](.env.example). Secrets live only on the server. The browser r
 **Cloud-only server settings:**
 - `TABLE_NAME` switches storage to DynamoDB when set and to the in-process store when unset.
 - `BEDROCK_MODEL_ID` selects the LLM for report drafts; when empty, drafting uses rules only.
+- `COVEXCODE_API_KEYS` (or a single `COVEXCODE_API_KEY`), `COVEXCODE_ENDPOINT` and `COVEXCODE_MODEL` enable report understanding, officer briefs and the ward pulse (section 25); calls rotate across the keys. When empty, Kestrel uses its keyword rules and hides the AI cards.
 
 **Build-time settings:**
 - `VITE_API_BASE` sets the API origin; empty means same origin.
@@ -844,7 +845,29 @@ flowchart LR
 - Ward boundaries and agency ownership in the demo are sample data and need confirmation with the civic body before a real pilot.
 - The demo runs on synthetic data, labelled as such on every screen.
 
-## 25. Value and adoption
+## 25. How we used Covexcode
+
+The hackathon gave each team member Covexcode credits (`deepseek-v4-flash`, an OpenAI-compatible endpoint). We used them where a language model genuinely makes Kestrel better, wrapped in the same rule we apply to every model in this project: **the model suggests, Kestrel validates, and a deterministic fallback always exists.** All calls rotate round-robin across the three team keys, which live only in the git-ignored `.env` (see `.env.example`).
+
+**1. Understanding what citizens write.** `POST /v1/report-drafts` now sends the citizen's words, in any language, typed or spoken, to Covexcode (`backend/src/providers/covexcode.py`). It returns the category, the details the citizen claimed, the place they named, and a one-line English and Hindi summary that is shown back to them ("We understood: …"). The answer is untrusted: the category and details must come from Kestrel's own lists, the place must appear word for word in the citizen's text, and instructions hidden in a report are ignored. If the model is slow (12 s budget), down or returns anything invalid, the keyword rules answer instead and the report flow never breaks. Identical text is never billed twice.
+
+**2. Officer briefs.** In the ward officer console, every issue now carries an AI brief (`GET /v1/issues/{id}/brief`, officer-only): all the citizen descriptions of that problem condensed into two or three sentences in English and Hindi, noting risks citizens mentioned and how consistent the reports are. It is labelled as a summary of claims, cached per issue revision, and never shown publicly.
+
+**3. Ward pulse.** Every public ward page and the officer console show a short "ward pulse" (`GET /v1/wards/{id}/pulse`): the most urgent places, what is overdue and how the ward is doing on citizen-confirmed fixes, in English and Hindi. It is written from structured data only (categories, places, priorities, deadlines, the scorecard), so no citizen's free text ever reaches a public summary.
+
+**4. Measuring it honestly.** `ml/eval_report_understanding.py` builds a test set from a fixed grid of 6 categories × 4 writing styles (formal, angry, voice transcript, very short) × 8 languages. Covexcode writes the messages, but each label is the grid cell we asked for, never the model's opinion, and the writer is told not to always name the problem outright. Then the old keyword rules and Covexcode both read every message:
+
+- On **1,428 English, Hindi and Hinglish reports**, the keyword rules were right 51.6% of the time and gave no answer for 36%. Covexcode was right 83.9% with our first prompt. We then added a one-line definition of each category (its weak spot was formal descriptions of a "crumbled" or "sunken" road), which took it to **92.6%**, with every language above 91%. That second number was tuned on this set, so we checked it elsewhere:
+- On **2,329 reports in Bengali, Tamil, Marathi, Punjabi and Urdu**, which the prompt change was never tuned on, the keyword rules manage 3.3% and Covexcode went from 83.8% to **89.7%** (87% to 92% per language). So a resident can report in their own language and the ward officer still reads it in English or Hindi.
+- Median model latency is about 4 seconds, which is why the app shows "Reading your report…" and keeps the rules as a fallback.
+
+The same model family writes and reads these messages, so the model's numbers are likely optimistic. The rules' numbers are a fair floor. Everything is in `ml/understanding_eval*.json`, with the messages in `ml/understanding_set*.jsonl`.
+
+**5. Teaching the offline rules.** The keyword rules are what runs with no network. `ml/mine_rule_words.py` showed Covexcode the messages the rules missed and asked for words people actually used. A word was kept only if it fired on at least three messages and was right at least 95% of the time on one half of the data, and we reviewed the list by hand (126 words kept, 12 ambiguous ones dropped). On the other, untouched half, the offline rules went from **21.7% to 36.8%**, and for the first time they read some Bengali, Tamil, Marathi, Punjabi and Urdu reports with no network at all (`ml/rule_words.json`).
+
+In total the evaluation, prompt tuning and vocabulary mining used roughly 10 million tokens, split evenly across the three team keys. The tests in `backend/tests/test_covexcode.py` run without the network: they check the validation, the fallback, the cache, that briefs are officer-only and that the ward pulse never sees citizen text.
+
+## 26. Value and adoption
 
 **For citizens:** a report takes seconds, counts, is visible, and protects them on the road the same day.
 
@@ -866,7 +889,7 @@ flowchart LR
 - **Seeding the network.** Delivery riders, auto drivers and RWAs already travel the same roads every day and benefit directly from hazard-aware routing.
 - **Fits existing systems.** Kestrel deduplicates and ranks. It can forward one clean issue to an existing grievance system instead of replacing it.
 
-## 26. How Kestrel maps to the judging criteria
+## 27. How Kestrel maps to the judging criteria
 
 **Problem understanding (25%).** Sections [1](#1-the-problem), [2](#2-who-we-build-for) and [3](#3-why-existing-solutions-fall-short) explain why complaints fail today: duplicates, invisible severity, self-certified closure and fragmented ownership.
 
@@ -874,7 +897,7 @@ flowchart LR
 
 **Innovation (20%).** Issues have two axes (evidence versus workflow), closure needs citizen confirmation, severity is auditable, reports reroute riders, and edge AI suggests but never decides.
 
-**Value and impact (20%).** Officers get fewer and better tickets, wards get public scorecards, reporters get a direct personal benefit, and there is a clear pilot path ([section 25](#25-value-and-adoption)).
+**Value and impact (20%).** Officers get fewer and better tickets, wards get public scorecards, reporters get a direct personal benefit, and there is a clear pilot path ([section 26](#26-value-and-adoption)).
 
 **User experience (10%).** Voice works in Hindi, English and Hinglish, reports survive offline, layouts work at 360 px, no state relies on colour alone, and alerts are spoken ([section 14](#14-built-for-bharat)).
 
