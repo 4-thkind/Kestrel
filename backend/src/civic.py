@@ -23,6 +23,7 @@ from domain.evidence import evaluate_issue
 from domain.geometry import DELHI_BBOX, distance_m
 from domain.policy import iso, parse_iso
 from domain.validation import UUID_RE, ApiError, payload_hash
+from providers import covexcode
 from storage.local import DuplicateEvent, RevisionConflict
 
 if TYPE_CHECKING:
@@ -417,6 +418,15 @@ class Civic:
         return self._write(principal, body, digest_of, mutate, photo)
 
     # ------------------------------------------------------------ officers
+    def brief(self, issue_id: str, principal: "Principal") -> dict:
+        """Officer-only AI brief of every citizen description (Covexcode); cached per issue revision."""
+        issue = self._load(issue_id)
+        self._require_officer(principal, issue["wardId"])
+        notes = [o["description"] for o in sorted(issue["observations"], key=lambda o: o["observedAt"]) if o.get("description")]
+        out = covexcode.brief(issue["category"], issue.get("place"), notes, f"{issue_id}:{issue.get('revision')}")
+        return {"issueId": issue_id, "brief": out,
+                "reason": None if out else ("NO_DESCRIPTIONS" if not notes else "MODEL_UNAVAILABLE")}
+
     def _require_officer(self, principal: "Principal", ward_id: str) -> str:
         if self.svc.cfg.is_demo and principal.kind == "demo-admin":
             return "Demo administrator"
@@ -544,6 +554,19 @@ class Civic:
         views = self._views(now)
         return {"generatedAt": iso(now), "note": "Sample ward areas, not official boundaries.",
                 "wards": [{**w, "scorecard": self._scorecard(w, views, now)} for w in self.wards]}
+
+    def pulse(self, ward_id: str) -> dict:
+        """Public AI "ward pulse" (Covexcode) from the scorecard and open-issue summaries; no citizen text."""
+        ward = self._ward(ward_id)
+        now = self.svc.now()
+        views = self._views(now)
+        order = {"P1": 0, "P2": 1, "P3": 2}
+        issues = sorted((self._summary(v) for v in views
+                         if v["wardId"] == ward_id and v["workflow"]["state"] in lifecycle.OPEN_STATES),
+                        key=lambda i: (order[i["priority"]], -i["overdueDays"]))
+        snapshot = "|".join(f"{i['issueId']}:{i['priority']}:{i['workflowState']}:{i['overdueDays']}" for i in issues)
+        out = covexcode.pulse({**ward, "scorecard": self._scorecard(ward, views, now)}, issues, f"{ward_id}:{snapshot}")
+        return {"wardId": ward_id, "pulse": out, "reason": None if out else "MODEL_UNAVAILABLE"}
 
     def scorecard(self, ward_id: str) -> dict:
         ward = self._ward(ward_id)
