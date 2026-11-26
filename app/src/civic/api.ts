@@ -112,9 +112,13 @@ export interface WriteResult {
   sources: number;
 }
 
+/** Covexcode's reading of the citizen's words (validated server-side), or the keyword rules. */
+export interface Understanding { method: "covexcode" | "rules"; place?: string | null; summaryEn?: string | null; summaryHi?: string | null; modelId?: string }
+
 export interface Draft {
   suggestedCategory: Category | null;
   suggestedDetails: Detail[];
+  understanding?: Understanding;
   method: string;
   fallbackReason?: string | null;
 }
@@ -134,6 +138,12 @@ export const civicApi = {
       schemaVersion: "1.0", eventId: crypto.randomUUID(), kind, observedAt: new Date().toISOString(), clientMode,
     }, citizen(who)),
   draft: (text: string, who: string) => request<Draft>("POST", "/v1/report-drafts", { text }, citizen(who)),
+  pulse: (ward: string) =>
+    request<{ wardId: string; pulse: { en: string; hi: string | null; modelId: string; issues: number } | null; reason: string | null }>(
+      "GET", `/v1/wards/${ward}/pulse`),
+  brief: (id: string, ward: string) =>
+    request<{ issueId: string; brief: { en: string; hi: string | null; modelId: string; notes: number } | null; reason: string | null }>(
+      "GET", `/v1/issues/${encodeURIComponent(id)}/brief`, undefined, officer(ward)),
   wards: () => request<{ wards: Ward[]; note: string }>("GET", "/v1/wards"),
   queue: (ward: string) => request<{ ward: Ward; issues: IssueSummary[] }>("GET", `/v1/wards/${ward}/queue`, undefined, officer(ward)),
   transition: (id: string, ward: string, body: Record<string, unknown>) =>
