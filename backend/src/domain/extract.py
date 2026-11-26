@@ -49,6 +49,18 @@ CATEGORY_WORDS: list[tuple[str, list[str]]] = [
     ("BLOCKED_ROAD", ["blocked", "ped gira", "tree fallen", "fallen tree", "malba", "debris", "barricade",
                       "rasta band", "raasta band", "road band", "road closed", "पेड़ गिरा", "रास्ता बंद", "मलबा"]),
 ]
+#: Words mined from real phrasings by ml/mine_rule_words.py (Covexcode proposes, 95%-precision filter keeps,
+#: reviewed by hand; see ml/rule_words.json). They let the offline rules read Bengali, Tamil, Marathi, Punjabi
+#: and Urdu reports too. Added to category detection only, never to the water-depth extractor.
+MINED_WORDS: dict[str, list[str]] = {
+    'POTHOLE': ["loose gravel", "surface utar gaya", "گڑھوں", "उखड़ी हुई", "खड्डे आहेत", "বড় বড় গর্ত", "பெரிய குழி"],
+    'WATERLOGGING': ["paani jama hai", "paani ke andar", "paani khada", "پانی کھڑا", "अंडरपासमध्ये पाणी", "पाणी साचल्यामुळे", "ਪਾਣੀ ਖੜ੍ਹਾ", "நீர் தேங்கியுள்ளது"],
+    'OPEN_MANHOLE': ["cover missing", "cover nahi", "cover nahi hai", "cover toota", "open drain", "مین ہول", "نالے کا ڈھکن", "ڈھکن غائب", "ڈھکن ٹوٹا", "کھلا مین ہول", "گٹر کا ڈھکن", "उघडं पडलंय", "गटार उघडं", "गटाराचं झाकण", "झाकण गायब", "झाकण तुटलेलं", "ढक्कन", "ढक्कन गायब", "लोखंडी झाकण", "খোলা গর্ত", "খোলা ড্রেন", "ড্রেনের ঢাকনা", "ঢাকনা চুরি", "ঢাকনা নেই", "ঢাকনা ভাঙা", "ম্যানহোলের ঢাকনা", "ਕਵਰ ਗਾਇਬ", "ਗੋਲ ਖੁੱਲ੍ਹਾ", "ਡਰੇਨ ਕਵਰ", "ਢੱਕਣ ਗਾਇਬ", "ਢੱਕਣ ਟੁੱਟਿਆ", "ਢੱਕਣ ਨਹੀਂ", "ਨਾਲੀ ਦਾ ਢੱਕਣ", "ਲੋਹੇ ਦਾ ਢੱਕਣ", "கவர் இல்ல", "சாக்கடை மூடி", "திறந்து கிடக்கு", "பெரிய ஓட்டை", "மூடி உடைந்த", "மூடி உடைந்து", "மூடி காணாமல்"],
+    'BLOCKED_ROAD': ["broken concrete", "cement bags", "construction material", "fallen tree", "iron rods", "lane band", "ped gir gaya", "تعمیراتی سامان", "درخت گر گیا", "سڑک بند", "ملبہ", "ملبہ پڑا", "झाडाच्या फांद्या", "निर्माण सामग्री", "मलबा", "ইট-বালি", "গাছ পড়ে", "ਮਲਬਾ", "கிளை உடைஞ்சு", "மரக்கிளை"],
+    'GARBAGE_DUMP': ["bins", "kachre ka dher", "safai nahi hui", "wrappers", "مکھیاں", "ڈھیر لگا", "کچرے کا ڈھیر", "کچرے کی گاڑی", "আবর্জনার স্তূপ", "উপচে পড়ছে", "ডাস্টবিন", "ডাস্টবিন উপচে পড়ছে", "ময়লার গাড়ি", "ਕਚਰਾ", "ਕੂੜਾ ਇਕੱਠਾ", "ਕੂੜਾ ਪਿਆ", "ਕੂੜਾ ਸੁੱਟ", "ਗੰਦਗੀ", "ਨਹੀਂ ਚੁੱਕਿਆ", "ਮੱਖੀਆਂ", "குப்பை வண்டி", "குப்பைக் குவியல்", "குப்பைத்தொட்டி"],
+    'STREETLIGHT_OUT': ["pitch dark", "roshni nahi", "so dark", "unlit", "اندھیرا ہے", "روشنی نہیں", "لائٹ نہیں", "گھپ اندھیرا", "अंधार", "अंधारात", "काहीच दिसत नाही", "दिवे बंद", "स्ट्रीट लाईट", "আলো নেই", "এত অন্ধকার", "ঘুটঘুটে অন্ধকার", "জ্বলছে না", "লাইট নষ্ট", "স্ট্রিটলাইট", "ਅੰਨ੍ਹੇਰਾ", "ਬਿਲਕੁਲ ਹਨੇਰਾ", "ਬੱਤੀ", "ਹਨੇਰਾ", "இருட்டு", "ரொம்ப இருட்டா இருக்கு", "விளக்கு இல்ல", "விளக்கு எரியல"],
+}
+CATEGORY_WORDS = [(key, words + MINED_WORDS.get(key, [])) for key, words in CATEGORY_WORDS]
 DETAIL_WORDS: dict[str, list[str]] = {
     "deep": ["gehra", "gahra", "bahut bada", "deep", "huge", "गहरा"],
     "near_school": ["school", "स्कूल", "vidyalaya"],
