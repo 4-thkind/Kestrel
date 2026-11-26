@@ -42,6 +42,13 @@ Parameters:
     Description: >
       Optional Bedrock model or inference-profile ID for Hinglish report drafts. Verify it is
       enabled in this account and region. Empty = deterministic rules extractor only.
+  CovexcodeApiKey:
+    Type: String
+    Default: ""
+    NoEcho: true
+    Description: >
+      Optional Covexcode key (OpenAI-compatible, deepseek-v4-flash) for report understanding and
+      officer briefs. Empty = keyword rules only.
   AllowedOrigin:
     Type: String
     Default: http://localhost:5173
@@ -106,6 +113,8 @@ Resources:
           EVIDENCE_FRESHNESS_MINUTES: "30"
           HAZARD_POLL_SECONDS: "15"
           BEDROCK_MODEL_ID: !Ref BedrockModelId
+          COVEXCODE_API_KEY: !Ref CovexcodeApiKey
+          COVEXCODE_MODEL: deepseek-v4-flash
           GOOGLE_MAPS_API_KEY: !Ref GoogleMapsApiKey
           SEED_DEMO: "1"           # seed sample issues on first start of an empty demo namespace
       Policies:
@@ -273,6 +282,8 @@ Resources:
           PSEUDONYM_SALT: !Ref PseudonymSalt
           BUILD_ID: !Ref BuildId
           BEDROCK_MODEL_ID: !Ref BedrockModelId
+          COVEXCODE_API_KEY: !Ref CovexcodeApiKey
+          COVEXCODE_MODEL: deepseek-v4-flash
       Policies:
         - !If
           - HasBedrock
