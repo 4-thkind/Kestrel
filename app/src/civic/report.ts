@@ -82,7 +82,7 @@ function setLocation(lat: number, lon: number, accuracyM?: number): void {
   map?.view([lon, lat], 17);
   const status = root.querySelector(".loc-status");
   if (status) status.textContent = accuracyM
-    ? L(`Located within about ${Math.round(accuracyM)} m. Tap the map to adjust.`, `लगभग ${Math.round(accuracyM)} मीटर तक सही। नक्शे पर टैप करके बदलें।`)
+    ? L(`Located within about ${Math.round(accuracyM)} m. Tap the map to adjust.`, `लोकेशन लगभग ${Math.round(accuracyM)} मीटर तक सही है। नक्शे पर टैप करके बदलें।`)
     : L("Pin set. Tap the map to adjust.", "पिन लगा। बदलने के लिए नक्शे पर टैप करें।");
   syncNav();
 }
@@ -90,13 +90,13 @@ function setLocation(lat: number, lon: number, accuracyM?: number): void {
 function locate(): void {
   const status = root.querySelector(".loc-status");
   if (!navigator.geolocation) {
-    if (status) status.textContent = L("No GPS on this device. Tap the map where the problem is.", "GPS नहीं है। नक्शे पर जगह टैप करें।");
+    if (status) status.textContent = L("No GPS on this device. Tap the map where the problem is.", "इस डिवाइस में GPS नहीं है। नक्शे पर समस्या की जगह टैप करें।");
     return;
   }
   if (status) status.textContent = L("Finding you…", "आपकी जगह ढूँढ रहे हैं…");
   navigator.geolocation.getCurrentPosition(
     (p) => setLocation(+p.coords.latitude.toFixed(6), +p.coords.longitude.toFixed(6), p.coords.accuracy),
-    () => status && (status.textContent = L("Location blocked or unavailable. Tap the map where the problem is.", "लोकेशन नहीं मिली। नक्शे पर जगह टैप करें।")),
+    () => status && (status.textContent = L("Location blocked or unavailable. Tap the map where the problem is.", "लोकेशन बंद है या उपलब्ध नहीं। नक्शे पर समस्या की जगह टैप करें।")),
     { enableHighAccuracy: true, timeout: 12_000, maximumAge: 30_000 },
   );
 }
@@ -118,7 +118,7 @@ function listen(): void {
   type Rec = new () => { lang: string; interimResults: boolean; onresult: (e: { results: { [i: number]: { [j: number]: { transcript: string } } } }) => void; onend: () => void; start(): void };
   const w = window as unknown as { SpeechRecognition?: Rec; webkitSpeechRecognition?: Rec };
   const R = w.SpeechRecognition ?? w.webkitSpeechRecognition;
-  if (!R) return toast(L("Voice input is not supported in this browser. Please type.", "इस ब्राउज़र में आवाज़ नहीं। कृपया लिखें।"), "warn");
+  if (!R) return toast(L("Voice input is not supported in this browser. Please type.", "इस ब्राउज़र में आवाज़ से लिखना नहीं चलता। कृपया लिखें।"), "warn");
   const rec = new R();
   rec.lang = getLang() === "hi" ? "hi-IN" : "en-IN";
   rec.interimResults = false;
@@ -150,10 +150,10 @@ async function understand(): Promise<void> {
         (u?.method === "covexcode" && (u.summaryEn || u.summaryHi) ? `
 ${L(u.summaryEn ?? "", u.summaryHi ?? u.summaryEn ?? "")}` : "");
     } else {
-      f.hint = L("Couldn't tell the problem type from that. Pick one below.", "प्रकार समझ नहीं आया। नीचे चुनें।");
+      f.hint = L("Couldn't tell the problem type from that. Pick one below.", "उससे समस्या का प्रकार समझ नहीं आया। नीचे से एक चुनें।");
     }
   } catch {
-    f.hint = L("Offline: pick the problem type below.", "ऑफ़लाइन: नीचे प्रकार चुनें।");
+    f.hint = L("Offline: pick the problem type below.", "ऑफ़लाइन: नीचे समस्या का प्रकार चुनें।");
   }
   render();
 }
@@ -216,7 +216,7 @@ function syncNav(): void {
 
 function stepWhat(): HTMLElement {
   const say = h("textarea", { id: "rep-say", rows: "2", maxlength: "1000",
-    placeholder: L("Say it in your words: \"flyover ke neeche bada gaddha hai\"", "अपने शब्दों में: \"गली में कूड़े का ढेर है\"") }) as HTMLTextAreaElement;
+    placeholder: L("Say it in your words: \"flyover ke neeche bada gaddha hai\"", "अपने शब्दों में: \"फ्लाईओवर के नीचे बड़ा गड्ढा है\"") }) as HTMLTextAreaElement;
   say.value = f.text;
   say.addEventListener("input", () => (f.text = say.value));
   say.addEventListener("change", () => void understand());
@@ -234,7 +234,7 @@ function stepWhat(): HTMLElement {
 
 function stepWhere(): HTMLElement {
   const place = h("input", { id: "rep-place", maxlength: "120",
-    placeholder: L("Landmark (optional): near Moolchand flyover", "पहचान (वैकल्पिक): मूलचंद फ्लाईओवर के पास") }) as HTMLInputElement;
+    placeholder: L("Landmark (optional): near Moolchand flyover", "लैंडमार्क (वैकल्पिक): मूलचंद फ्लाईओवर के पास") }) as HTMLInputElement;
   place.value = f.place;
   place.addEventListener("input", () => (f.place = place.value));
   const mapBox = h("div", { class: "rep-map", id: "rep-map" });
@@ -248,7 +248,7 @@ function stepWhere(): HTMLElement {
   return h("div", { class: "wiz-step" },
     h("div", {}, h("p", { class: "eyebrow" }, L("Step 2 of 4", "चरण 2 / 4")), h("h1", {}, L("Where is it?", "कहाँ है?"))),
     mapBox,
-    h("div", { class: "loc-row" }, btn(h("span", {}, icon("locate", 18), L("Use my location", "मेरी जगह")), "secondary small", locate),
+    h("div", { class: "loc-row" }, btn(h("span", {}, icon("locate", 18), L("Use my location", "मेरी लोकेशन लें")), "secondary small", locate),
       h("span", { class: "loc-status muted", "aria-live": "polite" })),
     place);
 }
@@ -276,16 +276,16 @@ const VISION_LABEL: Record<string, [string, string]> = {
 function visionCard(): HTMLElement | null {
   const v = f.vision;
   if (!v || v === "failed") return null;
-  if (v === "loading") return h("div", { class: "vision-card" }, h("span", { class: "vision-dot" }), L("Kestrel Vision is looking at your photo…", "Kestrel Vision फ़ोटो देख रहा है…"));
+  if (v === "loading") return h("div", { class: "vision-card" }, h("span", { class: "vision-dot" }), L("Kestrel Vision is looking at your photo…", "Kestrel Vision आपकी फ़ोटो देख रहा है…"));
   const top = v.guess.ranked.slice(0, 3);
   const notes: (HTMLElement | null)[] = [];
   if (v.guess.key === "not_street") notes.push(h("p", { class: "vision-warn" }, L("This doesn't look like a street photo. Please photograph the problem itself.", "यह सड़क की फ़ोटो नहीं लगती। समस्या की फ़ोटो लें।")));
   if (v.guess.key === "road_ok") notes.push(h("p", { class: "vision-warn" }, L("The road looks normal in this photo. Make sure the problem is in the frame.", "फ़ोटो में सड़क सामान्य लगती है। समस्या फ़्रेम में रखें।")));
-  if (v.guess.key === "manhole_cover") notes.push(h("p", { class: "vision-warn" }, L("Looks like a closed manhole cover. Report it only if it is open, broken or sunken.", "बंद ढक्कन लगता है। खुला या टूटा हो तभी रिपोर्ट करें।")));
+  if (v.guess.key === "manhole_cover") notes.push(h("p", { class: "vision-warn" }, L("Looks like a closed manhole cover. Report it only if it is open, broken or sunken.", "बंद मैनहोल का ढक्कन लगता है। खुला, टूटा या धँसा हो तभी रिपोर्ट करें।")));
   if (v.guess.category && f.category && f.category !== v.guess.category && v.guess.confidence >= 0.6) {
     const suggested = v.guess.category as Category;
     notes.push(h("p", {}, L("The photo looks more like ", "फ़ोटो ज़्यादा ऐसी लगती है: ") + catLabel(suggested) + ". ",
-      btn(L(`Use ${catLabel(suggested)} instead`, `${catLabel(suggested)} चुनें`), "link", () => {
+      btn(L(`Use ${catLabel(suggested)} instead`, `इसके बजाय ${catLabel(suggested)} चुनें`), "link", () => {
         f.category = suggested;
         f.details = new Set([...f.details].filter((d) => DETAILS_FOR[suggested].includes(d)));
         render();
@@ -321,7 +321,7 @@ function stepExtras(): HTMLElement {
     }
   });
   return h("div", { class: "wiz-step" },
-    h("div", {}, h("p", { class: "eyebrow" }, L("Step 3 of 4 · optional", "चरण 3 / 4 · वैकल्पिक")), h("h1", {}, L("Add a photo and details", "फ़ोटो और जानकारी"))),
+    h("div", {}, h("p", { class: "eyebrow" }, L("Step 3 of 4 · optional", "चरण 3 / 4 · वैकल्पिक")), h("h1", {}, L("Add a photo and details", "फ़ोटो और जानकारी जोड़ें"))),
     f.photo
       ? h("div", { class: "photo-preview" }, h("img", { src: f.photo.preview, alt: L("Your photo", "आपकी फ़ोटो") }),
           btn(L("Remove", "हटाएँ"), "link", () => {
@@ -330,7 +330,7 @@ function stepExtras(): HTMLElement {
             render();
           }))
       : h("label", { class: "photo-drop", for: "rep-photo" }, icon("camera", 30), L("Take or choose a photo", "फ़ोटो लें या चुनें"),
-          h("span", { class: "meta" }, L("A photo makes it count more. Avoid faces and number plates.", "फ़ोटो से वज़न बढ़ता है। चेहरे और नंबर प्लेट से बचें।"))),
+          h("span", { class: "meta" }, L("A photo makes it count more. Avoid faces and number plates.", "फ़ोटो से रिपोर्ट मज़बूत होती है। चेहरे और नंबर प्लेट से बचें।"))),
     photoIn,
     f.photo ? visionCard() : null,
     f.hint ? h("p", { class: "understood" }, f.hint) : null,
@@ -361,11 +361,11 @@ function stepReview(): HTMLElement {
       f.photo ? h("img", { src: f.photo.preview, alt: "", style: "width:120px;border-radius:12px" }) : null),
     h("h2", {}, nearby.length ? L("Is it one of these?", "क्या यह इनमें से एक है?") : L("No similar issue nearby", "पास में ऐसी कोई समस्या नहीं")),
     nearby.length ? h("p", { class: "meta" }, L("Joining adds your voice and raises its priority instead of creating a duplicate.",
-      "जुड़ने से आपकी आवाज़ जुड़ती है और प्राथमिकता बढ़ती है।"))
-      : h("p", { class: "meta" }, L("Yours will start a new issue. A second person confirming it makes it verified.", "आपकी रिपोर्ट नई समस्या बनेगी।")),
+      "जुड़ने से डुप्लिकेट रिपोर्ट बनाने के बजाय आपकी आवाज़ जुड़ती है और प्राथमिकता बढ़ती है।"))
+      : h("p", { class: "meta" }, L("Yours will start a new issue. A second person confirming it makes it verified.", "आपकी रिपोर्ट नई समस्या बनेगी। दूसरे व्यक्ति की पुष्टि पर यह सत्यापित हो जाएगी।")),
     h("div", { class: "dupes" }, ...dupes),
     h("p", { class: "fineprint" }, L("Reports are claims, not measurements. Each person counts once per issue. Demo data is synthetic. ",
-      "रिपोर्ट दावा है, माप नहीं। हर व्यक्ति एक बार गिना जाता है। "),
+      "रिपोर्ट दावा है, माप नहीं। हर व्यक्ति हर समस्या पर एक बार गिना जाता है। डेमो डेटा कृत्रिम है। "),
       btn(L("Demo: act as another citizen", "डेमो: दूसरा नागरिक बनें"), "link", () => toast(L("Now reporting as ", "अब इस नाम से: ") + newCitizenId()))));
 }
 
@@ -376,14 +376,14 @@ function done(): HTMLElement {
     ...(queued || !r
       ? [h("h1", {}, L("Saved on your phone", "आपके फ़ोन में सुरक्षित")),
          h("p", { class: "muted" }, L("No connection right now. It sends itself when you're back online, with the time you saw it.",
-           "अभी नेटवर्क नहीं है। नेटवर्क आते ही रिपोर्ट अपने-आप जाएगी।"))]
+           "अभी नेटवर्क नहीं है। नेटवर्क आते ही रिपोर्ट अपने-आप चली जाएगी, उस समय के साथ जब आपने इसे देखा था।"))]
       : [h("h1", {}, r.joined ? L("Added to an existing issue", "मौजूदा समस्या में जोड़ा गया") : L("New issue created", "नई समस्या बनी")),
          h("p", { class: "muted" }, r.joined
-           ? L(`You're one of ${r.sources} people who reported this. It now has ${r.reports} reports.`, `इसे ${r.sources} लोगों ने बताया है। अब ${r.reports} रिपोर्ट हैं।`)
+           ? L(`You're one of ${r.sources} people who reported this. It now has ${r.reports} reports.`, `आप उन ${r.sources} लोगों में से एक हैं जिन्होंने यह बताया। अब इस पर ${r.reports} रिपोर्ट हैं।`)
            : L("You're the first. When a second person confirms it, it becomes verified.", "आप पहले हैं। दूसरे की पुष्टि पर सत्यापित होगी।")),
          h("p", {}, priorityChip(r.priority, r.score), " ", h("span", { class: `wf wf-${r.workflowState.toLowerCase()}` }, wfLabel(r.workflowState))),
          h("a", { class: "primary big", href: `#/i/${r.issueId}` }, L("Track this issue", "इस समस्या को ट्रैक करें") + ` · ${r.issueId}`)]),
-    btn(L("Report another", "एक और रिपोर्ट"), "secondary big", restart));
+    btn(L("Report another", "एक और रिपोर्ट करें"), "secondary big", restart));
 }
 
 function render(): void {
@@ -408,7 +408,7 @@ function render(): void {
   }, { style: "flex:0 0 30%" }) : null;
   root.replaceChildren(h("div", { class: "wiz" },
     h("div", { class: "wizard-top" }, h("a", { href: "#/", class: "back" }, "← ", L("Overview", "अवलोकन")), h("span", { class: "meta" }, L("Report an issue", "समस्या रिपोर्ट करें"))),
-    h("ol", { class: "report-steps", "aria-label": L("Report progress", "रिपोर्ट प्रगति") },
+    h("ol", { class: "report-steps", "aria-label": L("Report progress", "रिपोर्ट की प्रगति") },
       ...[["Problem", "समस्या"], ["Location", "जगह"], ["Details", "जानकारी"], ["Review", "जाँच"]].map(([en, hi], i) =>
         h("li", { class: i <= step ? "on" : "", ...(i === step ? { "aria-current": "step" } : {}) },
           h("span", {}, i < step ? "✓" : String(i + 1)), L(en, hi)))),
