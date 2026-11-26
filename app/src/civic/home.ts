@@ -25,7 +25,7 @@ export function issueRow(i: IssueSummary): HTMLElement {
         priorityChip(i.priority, i.score),
         h("span", { class: `wf wf-${i.workflowState.toLowerCase()}` }, wfLabel(i.workflowState)),
         h("span", { class: "meta" }, `${i.reports} ${L("reports", "रिपोर्ट")}`),
-        i.overdueDays > 0 ? h("span", { class: "overdue" }, `${i.overdueDays}${L("d overdue", " दिन देर")}`) : null,
+        i.overdueDays > 0 ? h("span", { class: "overdue" }, `${i.overdueDays}${L("d overdue", " दिन देरी")}`) : null,
         i.blocksRoute ? h("span", { class: "routes-flag", title: L("Routes avoid this", "रास्ते इससे बचते हैं") }, icon("route", 14)) : null,
       ),
     ),
@@ -54,7 +54,7 @@ function draw(): void {
   root.querySelector(".home-list")!.replaceChildren(...(shown.length ? shown.map(issueRow)
     : [h("div", { class: "empty" }, icon(loadFailed ? "map" : "check", 28),
       h("b", {}, loadFailed ? L("We couldn’t load the issues", "समस्याएँ लोड नहीं हुईं") : L("No issues to show", "कोई समस्या नहीं मिली")),
-      h("p", {}, loadFailed ? L("Check your connection and try again.", "कनेक्शन जाँचें और फिर कोशिश करें।") : L("Try another search or category, or report something you’ve spotted.", "दूसरी श्रेणी चुनें या नई समस्या रिपोर्ट करें।")),
+      h("p", {}, loadFailed ? L("Check your connection and try again.", "कनेक्शन जाँचें और फिर कोशिश करें।") : L("Try another search or category, or report something you’ve spotted.", "दूसरी खोज या श्रेणी आज़माएँ, या नई समस्या रिपोर्ट करें।")),
       loadFailed ? btn(L("Try again", "फिर कोशिश करें"), "secondary small", () => { void showHome(root); }) : null)]));
   const p1 = issues.filter((i) => i.priority === "P1").length;
   const overdue = issues.filter((i) => i.overdueDays > 0).length;
@@ -62,7 +62,7 @@ function draw(): void {
     stat(loadFailed ? "—" : String(issues.length), L("Open issues", "खुली समस्याएँ")),
     stat(loadFailed ? "—" : String(p1), L("Need urgent attention", "तुरंत ध्यान चाहिए"), "p1"),
     stat(loadFailed ? "—" : String(overdue), L("Past their due date", "समय सीमा पार"), overdue ? "warn" : ""),
-    stat(loadFailed ? "—" : String(issues.reduce((a, i) => a + i.reports, 0)), L("Community reports", "सामुदायिक रिपोर्ट")),
+    stat(loadFailed ? "—" : String(issues.reduce((a, i) => a + i.reports, 0)), L("Community reports", "समुदाय की रिपोर्टें")),
   );
   root.querySelector(".issue-count")!.textContent = loadFailed ? L("Unavailable", "अनुपलब्ध") : L(`${shown.length} issues`, `${shown.length} समस्याएँ`);
   root.querySelector(".map-status")!.textContent = loadFailed ? L("Issues unavailable", "समस्याएँ अनुपलब्ध") : L("Community reported", "समुदाय द्वारा रिपोर्ट");
@@ -70,20 +70,20 @@ function draw(): void {
 }
 
 function nearMe(): void {
-  if (!navigator.geolocation) return toast(L("No GPS on this device.", "इस डिवाइस में GPS नहीं।"), "warn");
+  if (!navigator.geolocation) return toast(L("No GPS on this device.", "इस डिवाइस में GPS नहीं है।"), "warn");
   navigator.geolocation.getCurrentPosition((p) => {
     const at: [number, number] = [p.coords.longitude, p.coords.latitude];
     me?.clear();
     me?.pin(at, h("span", { class: "map-pin me" }, icon("locate", 16)));
     map?.view(at, 15);
-  }, () => toast(L("Location blocked or unavailable.", "लोकेशन नहीं मिली।"), "warn"), { timeout: 10_000, maximumAge: 60_000 });
+  }, () => toast(L("Location blocked or unavailable.", "लोकेशन बंद है या उपलब्ध नहीं।"), "warn"), { timeout: 10_000, maximumAge: 60_000 });
 }
 
 export async function showHome(el: HTMLElement): Promise<void> {
   root = el;
   if (!el.dataset.built) {
     el.dataset.built = "1";
-    const chips = h("div", { class: "filters", role: "group", "aria-label": L("Filter by category", "श्रेणी से छाँटें") },
+    const chips = h("div", { class: "filters", role: "group", "aria-label": L("Filter by category", "श्रेणी से फ़िल्टर करें") },
       ...(["ALL", ...CATEGORIES] as const).map((c) => {
         const b = h("button", { type: "button", class: "filter-chip", "data-cat": c }, c === "ALL" ? L("All", "सभी") : catLabel(c));
         if (c !== "ALL") b.prepend(icon(c, 16));
@@ -115,7 +115,7 @@ export async function showHome(el: HTMLElement): Promise<void> {
             h("span", { class: "map-status" }, L("Loading issues…", "समस्याएँ लोड हो रही हैं…")),
             btn(h("span", {}, icon("locate", 18), L("Near me", "मेरे पास")), "secondary map-fab", nearMe, { "aria-label": L("Show issues near me", "मेरे पास की समस्याएँ") }),
             h("div", { class: "map-legend" },
-              h("span", { class: "legend-urgent" }, L("Urgent", "अति आवश्यक")),
+              h("span", { class: "legend-urgent" }, L("Urgent", "अत्यावश्यक")),
               h("span", { class: "legend-moderate" }, L("Moderate", "मध्यम")),
               h("span", { class: "legend-low" }, L("Low priority", "कम प्राथमिकता")))),
           h("section", { class: "list-panel", "aria-label": L("Open issues", "खुली समस्याएँ") },
@@ -124,7 +124,7 @@ export async function showHome(el: HTMLElement): Promise<void> {
       ),
       h("aside", { class: "community-banner" },
         h("span", { class: "community-icon" }, icon("shield", 28)),
-        h("div", {}, h("h2", {}, L("Your everyday route. A little safer.", "आपका रोज़ का सफ़र। थोड़ा सुरक्षित।")), h("p", {}, L("Plan a ride that takes reported road hazards into account.", "सड़क की रिपोर्ट की गई समस्याओं को ध्यान में रखकर सफ़र चुनें।"))),
+        h("div", {}, h("h2", {}, L("Your everyday route. A little safer.", "आपका रोज़ का सफ़र। थोड़ा सुरक्षित।")), h("p", {}, L("Plan a ride that takes reported road hazards into account.", "सड़क पर रिपोर्ट की गई समस्याओं को ध्यान में रखकर सफ़र चुनें।"))),
         h("a", { href: "#/navigate", class: "secondary" }, L("Plan a safer ride", "सुरक्षित सफ़र चुनें"), icon("arrow", 18))),
       h("footer", { class: "dashboard-footer" }, L("Small reports. Real change. A better city, together.", "छोटी रिपोर्ट। असली बदलाव। साथ मिलकर बेहतर शहर।"), h("a", { href: "#/wards" }, L("Explore ward scorecards", "वार्ड स्कोरकार्ड देखें"), " ↗")),
     );
