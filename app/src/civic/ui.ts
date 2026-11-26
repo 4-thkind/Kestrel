@@ -149,6 +149,19 @@ export function toast(text: string, kind: "ok" | "warn" | "error" = "ok"): void 
 }
 
 /** Stable synthetic citizen id per browser, so two phones are two distinct sources. */
+/** Covexcode "ward pulse": fills in when ready, disappears if the model is off or slow. */
+export function wardPulse(wardId: string, pulse: (w: string) => Promise<{ pulse: { en: string; hi: string | null; modelId: string; issues: number } | null }>): HTMLElement {
+  const box = h("section", { class: "ai-brief" }, h("p", { class: "meta" }, L("Ward pulse loading…", "वार्ड का हाल लोड हो रहा है…")));
+  pulse(wardId).then(({ pulse: p }) => {
+    if (!p) return box.remove();
+    box.replaceChildren(
+      h("p", { class: "ai-brief-head" }, h("b", {}, L("Ward pulse", "वार्ड का हाल")), h("span", { class: "meta" }, ` · AI summary · Covexcode ${p.modelId}`)),
+      h("p", {}, L(p.en, p.hi ?? p.en)),
+      h("p", { class: "fineprint" }, L("Written from this ward's open issues and scorecard only.", "केवल इस वार्ड की खुली समस्याओं और स्कोरकार्ड से लिखा गया।")));
+  }).catch(() => box.remove());
+  return box;
+}
+
 export function citizenId(): string {
   try {
     let id = localStorage.getItem("kestrel.citizen");
