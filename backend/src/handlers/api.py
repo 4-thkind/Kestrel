@@ -42,8 +42,8 @@ def service() -> Service:
 
 
 EVIDENCE_RE = re.compile(r"^/v1/hotspots/([A-Z0-9_]{1,64})/evidence$")
-ISSUE_PATH_RE = re.compile(r"^/v1/issues/([A-Za-z0-9-]{1,32})(/votes|/transitions)?$")
-WARD_PATH_RE = re.compile(r"^/v1/wards/([A-Za-z0-9-]{1,16})/(queue|scorecard)$")
+ISSUE_PATH_RE = re.compile(r"^/v1/issues/([A-Za-z0-9-]{1,32})(/votes|/transitions|/brief)?$")
+WARD_PATH_RE = re.compile(r"^/v1/wards/([A-Za-z0-9-]{1,16})/(queue|scorecard|pulse)$")
 PHOTO_PATH_RE = re.compile(r"^/v1/photos/([A-Za-z0-9-]{1,40})$")
 #: Routes that may carry one compressed photo.
 PHOTO_BODY_BYTES = 450 * 1024
@@ -121,6 +121,8 @@ def route(svc: Service, event: dict) -> tuple[int, dict]:
         issue_id, sub = m.group(1), m.group(2)
         if method == "GET" and not sub:
             return 200, svc.civic.issue(issue_id)
+        if method == "GET" and sub == "/brief":
+            return 200, svc.civic.brief(issue_id, svc.principal_from(headers, claims))
         if method == "POST" and sub == "/votes":
             return svc.civic.vote(issue_id, _body(event, PHOTO_BODY_BYTES), svc.principal_from(headers, claims))
         if method == "POST" and sub == "/transitions":
@@ -131,6 +133,8 @@ def route(svc: Service, event: dict) -> tuple[int, dict]:
     if method == "GET" and (m := WARD_PATH_RE.match(path)):
         if m.group(2) == "queue":
             return 200, svc.civic.queue(m.group(1), svc.principal_from(headers, claims))
+        if m.group(2) == "pulse":
+            return 200, svc.civic.pulse(m.group(1))
         return 200, svc.civic.scorecard(m.group(1))
     if method == "POST" and path == "/v1/demo/control":
         return 200, svc.demo_control(_body(event), svc.principal_from(headers, claims))
