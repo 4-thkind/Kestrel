@@ -1,0 +1,606 @@
+{
+ "strings": 292,
+ "flagged": 75,
+ "fixes": [
+  {
+   "file": "app\\src\\civic\\home.ts",
+   "en": "d overdue",
+   "hi": " दिन देर",
+   "id": 6,
+   "suggested": " दिन देरी",
+   "why": "'दिन देर' needs a postposition; noun form 'दिन देरी' reads naturally as a short overdue label."
+  },
+  {
+   "file": "app\\src\\civic\\home.ts",
+   "en": "Try another search or category, or report something you’ve spotted.",
+   "hi": "दूसरी श्रेणी चुनें या नई समस्या रिपोर्ट करें।",
+   "id": 11,
+   "suggested": "दूसरी खोज या श्रेणी आज़माएँ, या नई समस्या रिपोर्ट करें।",
+   "why": "The 'try another search' option is missing from the Hindi."
+  },
+  {
+   "file": "app\\src\\civic\\home.ts",
+   "en": "Community reports",
+   "hi": "सामुदायिक रिपोर्ट",
+   "id": 16,
+   "suggested": "समुदाय की रिपोर्टें",
+   "why": "Use 'समुदाय' to stay consistent with 'समुदाय द्वारा रिपोर्ट'; 'सामुदायिक' is a stiff adjective here."
+  },
+  {
+   "file": "app\\src\\civic\\home.ts",
+   "en": "No GPS on this device.",
+   "hi": "इस डिवाइस में GPS नहीं।",
+   "id": 21,
+   "suggested": "इस डिवाइस में GPS नहीं है।",
+   "why": "Missing verb 'है' — sentence is incomplete without it."
+  },
+  {
+   "file": "app\\src\\civic\\home.ts",
+   "en": "Location blocked or unavailable.",
+   "hi": "लोकेशन नहीं मिली।",
+   "id": 22,
+   "suggested": "लोकेशन ब्लॉक है या उपलब्ध नहीं।",
+   "why": "'Blocked' meaning is dropped; only 'unavailable' is conveyed."
+  },
+  {
+   "file": "app\\src\\civic\\home.ts",
+   "en": "Filter by category",
+   "hi": "श्रेणी से छाँटें",
+   "id": 23,
+   "suggested": "श्रेणी से फ़िल्टर करें",
+   "why": "'छाँटें' suggests sorting/picking out; 'फ़िल्टर करें' is the standard, clear UI term."
+  },
+  {
+   "file": "app\\src\\civic\\home.ts",
+   "en": "Urgent",
+   "hi": "अति आवश्यक",
+   "id": 41,
+   "suggested": "अत्यावश्यक",
+   "why": "“अति आवश्यक” reads as “very necessary”; use the standard urgency label."
+  },
+  {
+   "file": "app\\src\\civic\\home.ts",
+   "en": "Plan a ride that takes reported road hazards into account.",
+   "hi": "सड़क की रिपोर्ट की गई समस्याओं को ध्यान में रखकर सफ़र चुनें।",
+   "id": 46,
+   "suggested": "सड़क पर रिपोर्ट की गई समस्याओं को ध्यान में रखकर सफ़र चुनें।",
+   "why": "Grammar: add “पर” so the reported issues are on the road, not “of the road”."
+  },
+  {
+   "file": "app\\src\\civic\\issue.ts",
+   "en": "days overdue",
+   "hi": "दिन देर",
+   "id": 66,
+   "suggested": "दिन देरी",
+   "why": "'दिन देर' is unnatural; use noun 'देरी' consistent with score string."
+  },
+  {
+   "file": "app\\src\\civic\\issue.ts",
+   "en": "The ward marked this resolved. It closes only when two people confirm the fix; two 'still there' votes reopen it.",
+   "hi": "वार्ड ने हल बताया। दो लोगों की पुष्टि पर ही बंद होगा; दो 'अभी भी है' पर फिर खुलेगा।",
+   "id": 74,
+   "suggested": "वार्ड ने इसे सुलझा हुआ बताया। दो लोगों की पुष्टि पर ही बंद होगा; दो 'अभी भी है' पर फिर खुलेगा।",
+   "why": "'हल बताया' is unidiomatic and the object 'इसे' is missing."
+  },
+  {
+   "file": "app\\src\\civic\\issue.ts",
+   "en": "Votes count once per person. Two 'fixed' votes clear it.",
+   "hi": "हर व्यक्ति एक बार गिना जाता है।",
+   "id": 75,
+   "suggested": "हर व्यक्ति का वोट एक बार गिना जाता है। दो 'ठीक' वोट इसे हटा देते हैं।",
+   "why": "Second sentence missing; first sentence also needed 'vote'."
+  },
+  {
+   "file": "app\\src\\civic\\issue.ts",
+   "en": " Kestrel routes avoid this spot while it is open.",
+   "hi": " खुला रहने तक Kestrel रास्ते इससे बचते हैं।",
+   "id": 79,
+   "suggested": " जब तक यह खुला है, Kestrel रास्ते इस जगह से बचते हैं।",
+   "why": "Awkward phrasing; clarify 'while open' and 'avoid this spot'."
+  },
+  {
+   "file": "app\\src\\civic\\issue.ts",
+   "en": "The after-photo still looks like a problem (${likelihood(p)}). Citizen votes decide.",
+   "hi": "मरम्मत के बाद की फ़ोटो में अब भी समस्या दिखती है (${likelihood(p)})।",
+   "id": 84,
+   "suggested": "मरम्मत के बाद की फ़ोटो में अब भी समस्या दिखती है (${likelihood(p)})। नागरिक वोट तय करते हैं।",
+   "why": "Missing 'Citizen votes decide.'"
+  },
+  {
+   "file": "app\\src\\civic\\issue.ts",
+   "en": "The after-photo looks fixed (${likelihood(1 - p)}). Citizen votes still decide.",
+   "hi": "मरम्मत के बाद की फ़ोटो ठीक लगती है (${likelihood(1 - p)})।",
+   "id": 85,
+   "suggested": "मरम्मत के बाद की फ़ोटो ठीक लगती है (${likelihood(1 - p)})। नागरिक वोट अब भी तय करते हैं।",
+   "why": "Missing 'Citizen votes still decide.'"
+  },
+  {
+   "file": "app\\src\\civic\\issue.ts",
+   "en": "Computed on this device by a small open model. A hint, never a decision.",
+   "hi": "इस डिवाइस पर गणना। संकेत मात्र, फ़ैसला नहीं।",
+   "id": 87,
+   "suggested": "इस डिवाइस पर एक छोटे ओपन मॉडल से गणना। संकेत मात्र, फ़ैसला नहीं।",
+   "why": "Missing 'by a small open model.'"
+  },
+  {
+   "file": "app\\src\\civic\\officer.ts",
+   "en": "Waiting for citizens to confirm. No action needed.",
+   "hi": "नागरिक पुष्टि का इंतज़ार।",
+   "id": 88,
+   "suggested": "नागरिकों की पुष्टि का इंतज़ार। कोई कार्रवाई ज़रूरी नहीं।",
+   "why": "Missing second sentence and plural citizens."
+  },
+  {
+   "file": "app\\src\\civic\\officer.ts",
+   "en": "Public note (shown on the issue page)",
+   "hi": "सार्वजनिक नोट",
+   "id": 89,
+   "suggested": "सार्वजनिक नोट (समस्या पेज पर दिखेगा)",
+   "why": "Missing parenthetical about where it is shown."
+  },
+  {
+   "file": "app\\src\\civic\\officer.ts",
+   "en": "Kestrel Vision: this still looks like a problem (${likelihood(p)}). Citizens will see this check.",
+   "hi": "यह अब भी समस्या जैसा लगता है (${likelihood(p)})।",
+   "id": 90,
+   "suggested": "Kestrel Vision: यह अब भी समस्या जैसा लगता है (${likelihood(p)})। नागरिकों को यह जाँच दिखेगी।",
+   "why": "Missing product name and 'Citizens will see this check.'"
+  },
+  {
+   "file": "app\\src\\civic\\officer.ts",
+   "en": "Kestrel Vision: looks fixed (${likelihood(1 - p)}).",
+   "hi": "ठीक लगता है (${likelihood(1 - p)})।",
+   "id": 91,
+   "suggested": "Kestrel Vision: ठीक लगता है (${likelihood(1 - p)})।",
+   "why": "Missing product name."
+  },
+  {
+   "file": "app\\src\\civic\\officer.ts",
+   "en": "Duplicate of",
+   "hi": "इसका डुप्लिकेट",
+   "id": 93,
+   "suggested": "किसका डुप्लिकेट",
+   "why": "'इसका डुप्लिकेट' reverses the relation; it means duplicate of this."
+  },
+  {
+   "file": "app\\src\\civic\\officer.ts",
+   "en": "After-photo of the fixed site",
+   "hi": "मरम्मत के बाद की फ़ोटो",
+   "id": 94,
+   "suggested": "मरम्मत के बाद ठीक हुए स्थान की फ़ोटो",
+   "why": "Missing 'of the fixed site'."
+  },
+  {
+   "file": "app\\src\\civic\\officer.ts",
+   "en": "Summarised from what citizens wrote. Check the reports before acting.",
+   "hi": "नागरिकों के लिखे से सारांश। कार्रवाई से पहले रिपोर्ट देखें।",
+   "id": 101,
+   "suggested": "नागरिकों की लिखी बातों का सारांश। कार्रवाई से पहले रिपोर्ट देखें।",
+   "why": "\"नागरिकों के लिखे से सारांश\" is awkward Hindi; needs a clearer possessive phrase."
+  },
+  {
+   "file": "app\\src\\civic\\officer.ts",
+   "en": "Demo sign-in: pick a ward to act as its officer. Real pilots use a ward-scoped login.",
+   "hi": "डेमो: वार्ड चुनें। असली पायलट में वार्ड-लॉगिन होगा।",
+   "id": 106,
+   "suggested": "डेमो साइन-इन: उस वार्ड के अधिकारी बनने के लिए वार्ड चुनें। असली पायलट में वार्ड-सीमित लॉगिन होता है।",
+   "why": "Drops \"sign-in\" and \"to act as its officer\"; meaning of the demo instruction is lost."
+  },
+  {
+   "file": "app\\src\\civic\\officer.ts",
+   "en": "signed in as ward officer (demo)",
+   "hi": "वार्ड अधिकारी (डेमो)",
+   "id": 114,
+   "suggested": "वार्ड अधिकारी के रूप में साइन इन (डेमो)",
+   "why": "Missing \"signed in as\"; current text reads like a plain title."
+  },
+  {
+   "file": "app\\src\\civic\\officer.ts",
+   "en": "overdue",
+   "hi": "देर",
+   "id": 116,
+   "suggested": "समय पार",
+   "why": "\"देर\" alone is unclear as a status badge; needs to convey overdue."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Located within about ${Math.round(accuracyM)} m. Tap the map to adjust.",
+   "hi": "लगभग ${Math.round(accuracyM)} मीटर तक सही। नक्शे पर टैप करके बदलें।",
+   "id": 117,
+   "suggested": "लोकेशन लगभग ${Math.round(accuracyM)} मीटर तक सही है। नक्शे पर टैप करके बदलें।",
+   "why": "\"लगभग ... मीटर तक सही\" is a dangling phrase; add the subject for natural Hindi."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "No GPS on this device. Tap the map where the problem is.",
+   "hi": "GPS नहीं है। नक्शे पर जगह टैप करें।",
+   "id": 119,
+   "suggested": "इस डिवाइस में GPS नहीं है। नक्शे पर समस्या की जगह टैप करें।",
+   "why": "Lost \"on this device\" and \"where the problem is\"."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Location blocked or unavailable. Tap the map where the problem is.",
+   "hi": "लोकेशन नहीं मिली। नक्शे पर जगह टैप करें।",
+   "id": 121,
+   "suggested": "लोकेशन बंद या उपलब्ध नहीं। नक्शे पर समस्या की जगह टैप करें।",
+   "why": "\"blocked\" is dropped and the tap instruction loses \"where the problem is\"."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Voice input is not supported in this browser. Please type.",
+   "hi": "इस ब्राउज़र में आवाज़ नहीं। कृपया लिखें।",
+   "id": 122,
+   "suggested": "इस ब्राउज़र में आवाज़ से लिखना नहीं चलता। कृपया लिखें।",
+   "why": "\"आवाज़ नहीं\" is vague; should say voice input isn't supported."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Couldn't tell the problem type from that. Pick one below.",
+   "hi": "प्रकार समझ नहीं आया। नीचे चुनें।",
+   "id": 126,
+   "suggested": "उससे समस्या का प्रकार समझ नहीं आया। नीचे से एक चुनें।",
+   "why": "Uses the app term 'समस्या का प्रकार' and keeps 'from that'/'one'."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Offline: pick the problem type below.",
+   "hi": "ऑफ़लाइन: नीचे प्रकार चुनें।",
+   "id": 127,
+   "suggested": "ऑफ़लाइन: नीचे समस्या का प्रकार चुनें।",
+   "why": "Restores 'problem type' consistently as 'समस्या का प्रकार'."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Say it in your words: \\\"flyover ke neeche bada gaddha hai\\\"",
+   "hi": "अपने शब्दों में: \\\"गली में कूड़े का ढेर है\\\"",
+   "id": 129,
+   "suggested": "अपने शब्दों में: \"फ्लाईओवर के नीचे बड़ा गड्ढा है\"",
+   "why": "Hindi example wrongly describes garbage; it should match the pothole example."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Landmark (optional): near Moolchand flyover",
+   "hi": "पहचान (वैकल्पिक): मूलचंद फ्लाईओवर के पास",
+   "id": 134,
+   "suggested": "लैंडमार्क (वैकल्पिक): मूलचंद फ्लाईओवर के पास",
+   "why": "'पहचान' means identity; 'landmark' is better as 'लैंडमार्क' here."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Use my location",
+   "hi": "मेरी जगह",
+   "id": 137,
+   "suggested": "मेरी लोकेशन का उपयोग करें",
+   "why": "Current means 'my place'; missing the action 'Use'."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Kestrel Vision is looking at your photo…",
+   "hi": "Kestrel Vision फ़ोटो देख रहा है…",
+   "id": 138,
+   "suggested": "Kestrel Vision आपकी फ़ोटो देख रहा है…",
+   "why": "Adds the missing 'your' (आपकी)."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Looks like a closed manhole cover. Report it only if it is open, broken or sunken.",
+   "hi": "बंद ढक्कन लगता है। खुला या टूटा हो तभी रिपोर्ट करें।",
+   "id": 141,
+   "suggested": "बंद मैनहोल का ढक्कन लगता है। खुला, टूटा या धँसा हो तभी रिपोर्ट करें।",
+   "why": "Restores 'manhole' and the missing 'sunken' condition."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Use ${catLabel(suggested)} instead",
+   "hi": "${catLabel(suggested)} चुनें",
+   "id": 143,
+   "suggested": "इसके बजाय ${catLabel(suggested)} चुनें",
+   "why": "Restores the 'instead' meaning."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Add a photo and details",
+   "hi": "फ़ोटो और जानकारी",
+   "id": 151,
+   "suggested": "फ़ोटो और जानकारी जोड़ें",
+   "why": "Verb \"Add\" is missing; the Hindi is just a noun phrase."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "A photo makes it count more. Avoid faces and number plates.",
+   "hi": "फ़ोटो से वज़न बढ़ता है। चेहरे और नंबर प्लेट से बचें।",
+   "id": 155,
+   "suggested": "फ़ोटो से रिपोर्ट मज़बूत होती है। चेहरे और नंबर प्लेट से बचें।",
+   "why": "\"वज़न बढ़ता है\" literally means weight gain; unnatural for \"makes it count more\"."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Joining adds your voice and raises its priority instead of creating a duplicate.",
+   "hi": "जुड़ने से आपकी आवाज़ जुड़ती है और प्राथमिकता बढ़ती है।",
+   "id": 164,
+   "suggested": "जुड़ने से डुप्लिकेट रिपोर्ट बनाने के बजाय आपकी आवाज़ जुड़ती है और प्राथमिकता बढ़ती है।",
+   "why": "Second half \"instead of creating a duplicate\" is missing."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Yours will start a new issue. A second person confirming it makes it verified.",
+   "hi": "आपकी रिपोर्ट नई समस्या बनेगी।",
+   "id": 165,
+   "suggested": "आपकी रिपोर्ट नई समस्या बनेगी। दूसरे व्यक्ति की पुष्टि पर यह सत्यापित हो जाएगी।",
+   "why": "Second sentence about verification is missing."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Reports are claims, not measurements. Each person counts once per issue. Demo data is synthetic. ",
+   "hi": "रिपोर्ट दावा है, माप नहीं। हर व्यक्ति एक बार गिना जाता है। ",
+   "id": 166,
+   "suggested": "रिपोर्ट दावा है, माप नहीं। हर व्यक्ति हर समस्या पर एक बार गिना जाता है। डेमो डेटा कृत्रिम है। ",
+   "why": "\"per issue\" and the demo-data sentence are missing."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "No connection right now. It sends itself when you're back online, with the time you saw it.",
+   "hi": "अभी नेटवर्क नहीं है। नेटवर्क आते ही रिपोर्ट अपने-आप जाएगी।",
+   "id": 170,
+   "suggested": "अभी नेटवर्क नहीं है। नेटवर्क आते ही रिपोर्ट अपने-आप चली जाएगी, उस समय के साथ जब आपने इसे देखा था।",
+   "why": "\"with the time you saw it\" is dropped."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "You're one of ${r.sources} people who reported this. It now has ${r.reports} reports.",
+   "hi": "इसे ${r.sources} लोगों ने बताया है। अब ${r.reports} रिपोर्ट हैं।",
+   "id": 173,
+   "suggested": "आप उन ${r.sources} लोगों में से एक हैं जिन्होंने यह बताया। अब इस पर ${r.reports} रिपोर्ट हैं।",
+   "why": "\"You're one of\" meaning lost in the Hindi."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Report another",
+   "hi": "एक और रिपोर्ट",
+   "id": 176,
+   "suggested": "एक और रिपोर्ट करें",
+   "why": "Missing verb; button should be an action."
+  },
+  {
+   "file": "app\\src\\civic\\report.ts",
+   "en": "Report progress",
+   "hi": "रिपोर्ट प्रगति",
+   "id": 181,
+   "suggested": "रिपोर्ट की प्रगति",
+   "why": "Compound is ungrammatical; needs की."
+  },
+  {
+   "file": "app\\src\\civic\\ui.ts",
+   "en": "Written from this ward's open issues and scorecard only.",
+   "hi": "केवल इस वार्ड की खुली समस्याओं और स्कोरकार्ड से लिखा गया।",
+   "id": 185,
+   "suggested": "केवल इस वार्ड की खुली समस्याओं और स्कोरकार्ड के आधार पर लिखा गया है।",
+   "why": "'से लिखा गया' is unnatural; use 'के आधार पर' and add है."
+  },
+  {
+   "file": "app\\src\\civic\\wards.ts",
+   "en": "median fix time",
+   "hi": "औसत समय",
+   "id": 194,
+   "suggested": "मरम्मत का माध्यिका समय",
+   "why": "Median is not average; 'fix' is also missing."
+  },
+  {
+   "file": "app\\src\\civic\\wards.ts",
+   "en": "A fix counts only when citizens confirm it. Reopens and overdue issues count against a ward.",
+   "hi": "मरम्मत तभी गिनी जाती है जब नागरिक पुष्टि करें। दोबारा खुलना और देरी वार्ड के ख़िलाफ़ गिने जाते हैं।",
+   "id": 195,
+   "suggested": "मरम्मत तभी गिनी जाती है जब नागरिक उसकी पुष्टि करें। दोबारा खुलने वाली और समय पर न सुलझी समस्याएँ वार्ड के ख़िलाफ़ गिनी जाती हैं।",
+   "why": "Current phrase omits the issues and has agreement/meaning problems."
+  },
+  {
+   "file": "app\\src\\civic\\wards.ts",
+   "en": "Sample ward areas around real localities, not official boundaries. Demo data is synthetic.",
+   "hi": "असली इलाकों के आसपास नमूना क्षेत्र, आधिकारिक सीमा नहीं। डेमो डेटा कृत्रिम है।",
+   "id": 196,
+   "suggested": "असली इलाकों के आसपास वार्डों के नमूना क्षेत्र, आधिकारिक सीमाएँ नहीं। डेमो डेटा कृत्रिम है।",
+   "why": "'नमूना क्षेत्र' omits ward and boundaries should be plural."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Compare routes",
+   "hi": "रास्ते तुलना करें",
+   "id": 204,
+   "suggested": "रास्तों की तुलना करें",
+   "why": "Missing की; current wording is ungrammatical."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Road geometry not yet human-reviewed",
+   "hi": "सड़क का नक्शा अभी जाँचा नहीं गया",
+   "id": 211,
+   "suggested": "सड़क की बनावट अभी किसी इंसान ने नहीं जाँची",
+   "why": "Original says road map, not road geometry, and omits human review."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Detour adds",
+   "hi": "चक्कर में ज़्यादा",
+   "id": 218,
+   "suggested": "चक्कर से अतिरिक्त",
+   "why": "Current fragment is unnatural and incomplete for pairing with a value."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Earlier reports have aged out and nobody has confirmed the road is clear. Still avoiding it.",
+   "hi": "पुरानी रिपोर्ट की समय-सीमा खत्म हो गई है, पर रास्ता साफ़ होने की पुष्टि नहीं हुई। अब भी इससे बचें।",
+   "id": 219,
+   "suggested": "पुरानी रिपोर्ट की समय-सीमा खत्म हो गई है, पर रास्ता साफ़ होने की पुष्टि नहीं हुई। अब भी इससे बचा जा रहा है।",
+   "why": "English describes the system still avoiding it; current imperative tells the user to avoid."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Route recalculated",
+   "hi": "रास्ता दोबारा तय किया गया",
+   "id": 223,
+   "suggested": "रास्ते की दोबारा गणना हुई",
+   "why": "तय किया गया means decided/set, not recalculated; also inconsistent with गणना in ID 221."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Queued reports",
+   "hi": "कतार में रिपोर्ट",
+   "id": 228,
+   "suggested": "कतार में रिपोर्टें",
+   "why": "Reports is plural; Hindi needs 'रिपोर्टें', not singular 'रिपोर्ट'."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "We understood",
+   "hi": "हमने समझा",
+   "id": 231,
+   "suggested": "हम समझ गए",
+   "why": "More natural acknowledgment than 'हमने समझा'."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "End preview",
+   "hi": "प्रीव्यू बंद",
+   "id": 238,
+   "suggested": "प्रीव्यू बंद करें",
+   "why": "Current label lacks the action verb; 'End preview' is a button action."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "You chose the original route through reported water. Depth is unverified. Do not enter water.",
+   "hi": "आपने रिपोर्ट किए पानी वाला पुराना रास्ता चुना। गहराई अपुष्ट है। पानी में न जाएं।",
+   "id": 243,
+   "suggested": "आपने पानी की रिपोर्ट वाला पुराना रास्ता चुना। गहराई की पुष्टि नहीं है। पानी में न जाएं।",
+   "why": "Fixes awkward 'रिपोर्ट किए पानी' and overly formal 'अपुष्ट'."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Set start on map",
+   "hi": "नक्शे पर शुरुआत",
+   "id": 246,
+   "suggested": "नक्शे पर शुरुआत सेट करें",
+   "why": "Missing action verb in the button label."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Use my location",
+   "hi": "मेरी लोकेशन",
+   "id": 247,
+   "suggested": "मेरी लोकेशन लें",
+   "why": "Current text is only a noun phrase; English includes the action 'Use'."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Caution! Waterlogging reported at Minto Bridge. Taking the flyover bypass.",
+   "hi": "सावधान! मिंटो ब्रिज पर जलभराव की रिपोर्ट है। फ्लाईओवर बाईपास ले रहे हैं।",
+   "id": 251,
+   "suggested": "सावधान! मिंटो ब्रिज पर जलभराव की रिपोर्ट है। फ्लाईओवर से बाईपास ले रहे हैं।",
+   "why": "Phrase 'फ्लाईओवर बाईपास ले रहे हैं' is incomplete/unnatural; add postposition."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Auto-fill from text",
+   "hi": "टेक्स्ट से भरें",
+   "id": 252,
+   "suggested": "टेक्स्ट से ऑटो-फ़िल करें",
+   "why": "Current loses the 'auto' meaning; it only says 'fill from text'."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Heavy rain forecast near the corridor. No reports yet - conditions may change. Rain alone never closes a road here.",
+   "hi": "इलाके में भारी बारिश का पूर्वानुमान। अभी कोई रिपोर्ट नहीं - हालात बदल सकते हैं। सिर्फ़ बारिश से रास्ता बंद नहीं माना जाता।",
+   "id": 256,
+   "suggested": "कॉरिडोर के पास भारी बारिश का पूर्वानुमान। अभी कोई रिपोर्ट नहीं - हालात बदल सकते हैं। यहाँ सिर्फ़ बारिश से रास्ता बंद नहीं होता।",
+   "why": "'near the corridor' was rendered as 'in the area'; closure sentence made more natural."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Underpass bypass active for two-wheelers",
+   "hi": "दोपहिया के लिए अंडरपास बाईपास",
+   "id": 264,
+   "suggested": "दोपहिया के लिए अंडरपास बाईपास चालू है",
+   "why": "Missing 'active'; current is only a noun phrase."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Auto-safe corridor: underpass avoided",
+   "hi": "ऑटो के लिए अंडरपास टाला गया",
+   "id": 265,
+   "suggested": "ऑटो-सुरक्षित कॉरिडोर: अंडरपास टाला गया",
+   "why": "Omitted 'safe corridor'; current only says underpass avoided for auto."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Avoiding reported water at the underpass",
+   "hi": "अंडरपास के पानी से बचाव",
+   "id": 266,
+   "suggested": "अंडरपास पर रिपोर्ट किए गए पानी से बचाव",
+   "why": "Omitted 'reported'; source says reported water."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "High clearance does not override reports - depth is unverified, underpass still avoided",
+   "hi": "ऊँची गाड़ी भी नहीं - गहराई अपुष्ट है, अंडरपास टाला गया",
+   "id": 267,
+   "suggested": "गाड़ी की ऊँचाई रिपोर्ट को दरकिनार नहीं करती - गहराई अपुष्ट है, अंडरपास फिर भी टाला गया।",
+   "why": "Current misstates high clearance and drops 'reports'/'still'."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Reported",
+   "hi": "रिपोर्ट हुई",
+   "id": 274,
+   "suggested": "रिपोर्ट किया गया",
+   "why": "'रिपोर्ट हुई' sounds like an event; status label should be 'reported'."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Conflicting reports",
+   "hi": "विरोधी रिपोर्ट",
+   "id": 276,
+   "suggested": "परस्पर विरोधी रिपोर्टें",
+   "why": "“विरोधी रिपोर्ट” is unnatural and singular; needs plural for conflicting reports."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "No adequate recent evidence. Unknown is not the same as dry.",
+   "hi": "पर्याप्त ताज़ा जानकारी नहीं। अनजान का मतलब सूखा नहीं।",
+   "id": 279,
+   "suggested": "पर्याप्त ताज़ा सबूत नहीं। अज्ञात होना सूखा होना नहीं है।",
+   "why": "“अनजान” means stranger/ignorant, not an unknown status; “सबूत” matches evidence."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Newer reports disagree. Still avoided until a reviewer checks.",
+   "hi": "नई रिपोर्ट में असहमति है। समीक्षा तक टाला गया।",
+   "id": 282,
+   "suggested": "नई रिपोर्टों में असहमति है। समीक्षक के जाँचने तक अभी भी टाला गया।",
+   "why": "Plural reports and the reviewer's check are missing; current Hindi says only “until review” and drops “still”."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "Water was reported earlier; no recent reports either way. Not treated as clear.",
+   "hi": "पहले पानी बताया गया था; अब कोई ताज़ा रिपोर्ट नहीं। साफ़ नहीं माना गया।",
+   "id": 283,
+   "suggested": "पहले पानी बताया गया था; अब किसी भी तरह की ताज़ा रिपोर्ट नहीं। साफ़ नहीं माना गया।",
+   "why": "Drops “either way”; should say no recent reports in either direction."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "A community reviewer accepted two newer no-water reports. Not official clearance.",
+   "hi": "समुदाय समीक्षक ने दो नई 'पानी नहीं' रिपोर्ट मानी। यह आधिकारिक मंज़ूरी नहीं।",
+   "id": 284,
+   "suggested": "सामुदायिक समीक्षक ने 'पानी नहीं' की दो नई रिपोर्टें स्वीकार कीं। यह आधिकारिक मंज़ूरी नहीं है।",
+   "why": "Fixes compound/adjective and plural agreement; “रिपोर्ट मानी” is ungrammatical with “दो”."
+  },
+  {
+   "file": "app\\src\\flood\\i18n.ts",
+   "en": "your camera flagged possible water here",
+   "hi": "आपके कैमरे ने यहाँ पानी देखा",
+   "id": 291,
+   "suggested": "आपके कैमरे ने यहाँ पानी होने की संभावना बताई",
+   "why": "“देखा” says the camera saw water; English says it flagged possible water."
+  }
+ ]
+}
