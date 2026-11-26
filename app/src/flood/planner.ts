@@ -99,13 +99,7 @@ const ROLE_VEHICLE: Record<Role, Vehicle> = {
   commuter: "car",
   reporter: "two_wheeler",
 };
-const ROLE_LABEL: Record<Role, string> = {
-  rider: "Two-wheeler rider",
-  driver: "Car or cab driver",
-  auto: "Auto-rickshaw driver",
-  commuter: "Commuter planning a trip",
-  reporter: "Community reporter",
-};
+const ROLE_LABEL = { rider: "roleRider", driver: "roleDriver", auto: "roleAuto", commuter: "roleCommuter", reporter: "roleReporter" } as const satisfies Record<Role, string>;
 
 /** What the camera ride needs from the planner: the route to follow and the hotspots to watch. */
 export interface RidePlan {
@@ -336,9 +330,9 @@ function renderTop(): void {
     wx.textContent = "";
     wx.className = "chip";
   }
-  $("btn-voice-toggle").textContent = s.prefs.voice ? "Sound on" : "Sound off";
+  $("btn-voice-toggle").textContent = t(s.prefs.voice ? "soundOn" : "soundOff");
   $("btn-voice-toggle").setAttribute("aria-pressed", String(s.prefs.voice));
-  $("role-label").textContent = s.prefs.role ? ROLE_LABEL[s.prefs.role] : "";
+  $("role-label").textContent = s.prefs.role ? t(ROLE_LABEL[s.prefs.role]) : "";
 }
 
 function renderMap(): void {
@@ -510,8 +504,8 @@ function renderRoutes(): void {
   list.replaceChildren();
   const d = s.decision;
   const pair = s.preset ? s.view?.pairs[0] : undefined;
-  $("od-from").textContent = s.originName || pair?.origin.name || (getLang() === "hi" ? "शुरुआत की जगह चुनें" : "Choose starting point");
-  $("od-to").textContent = s.destName || pair?.destination.name || "Choose destination";
+  $("od-from").textContent = s.originName || pair?.origin.name || t("chooseStartPoint");
+  $("od-to").textContent = s.destName || pair?.destination.name || t("chooseDest");
   $("btn-preset").hidden = s.preset && !s.origin && !s.destination;
   $("btn-demo-water").hidden = !s.status?.demo || !s.preset;
   if (!d) {
@@ -685,7 +679,7 @@ async function compare(note?: string): Promise<void> {
     s.compareSeq++;
     s.decision = undefined;
     s.decisionStale = false;
-    s.decisionNote = s.origin ? "Choose a destination above to see your route." : "Choose a starting point above, or use GPS for your current location.";
+    s.decisionNote = t(s.origin ? "hintPickDest" : "hintPickStart");
     renderAll();
     return;
   }
@@ -1083,6 +1077,13 @@ function applyLanguage(): void {
   document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((el) => {
     el.textContent = t(el.dataset.i18n as Parameters<typeof t>[0]);
   });
+  // screen readers and empty inputs need the language too
+  document.querySelectorAll<HTMLElement>("[data-i18n-aria]").forEach((el) => {
+    el.setAttribute("aria-label", t(el.dataset.i18nAria as Parameters<typeof t>[0]));
+  });
+  document.querySelectorAll<HTMLInputElement>("[data-i18n-placeholder]").forEach((el) => {
+    el.placeholder = t(el.dataset.i18nPlaceholder as Parameters<typeof t>[0]);
+  });
   document.querySelectorAll<HTMLElement>("[data-kind]").forEach((el) => {
     el.textContent = pick(KIND_LABEL, el.dataset.kind!);
   });
@@ -1225,7 +1226,7 @@ function watchMe(): void {
   navigator.geolocation.watchPosition(
     (p) => startFromFix({ at: [p.coords.longitude, p.coords.latitude], accuracyM: p.coords.accuracy }, false),
     (err) => {
-      if (err.code === err.PERMISSION_DENIED) $("update-note").textContent = "GPS is unavailable. You can still choose your starting point on the map or search for a place.";
+      if (err.code === err.PERMISSION_DENIED) $("update-note").textContent = t("gpsUnavailable");
     },
     { enableHighAccuracy: true, maximumAge: 10_000 },
   );
