@@ -157,7 +157,7 @@ export function wardPulse(wardId: string, pulse: (w: string) => Promise<{ pulse:
     box.replaceChildren(
       h("p", { class: "ai-brief-head" }, h("b", {}, L("Ward pulse", "वार्ड का हाल")), h("span", { class: "meta" }, ` · AI summary · Covexcode ${p.modelId}`)),
       h("p", {}, L(p.en, p.hi ?? p.en)),
-      h("p", { class: "fineprint" }, L("Written from this ward's open issues and scorecard only.", "केवल इस वार्ड की खुली समस्याओं और स्कोरकार्ड से लिखा गया।")));
+      h("p", { class: "fineprint" }, L("Written from this ward's open issues and scorecard only.", "केवल इस वार्ड की खुली समस्याओं और स्कोरकार्ड के आधार पर लिखा गया है।")));
   }).catch(() => box.remove());
   return box;
 }
