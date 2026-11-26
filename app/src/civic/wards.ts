@@ -1,6 +1,6 @@
 /** Public ward scorecards: computed only from data Kestrel can defend (citizen-confirmed fixes, reopens, delays). */
 import { civicApi, type Scorecard, type Ward } from "./api.ts";
-import { L, catLabel, h, toast } from "./ui.ts";
+import { L, catLabel, h, toast, wardPulse } from "./ui.ts";
 import { issueRow } from "./home.ts";
 
 const pct = (v: number | null) => (v === null ? "—" : `${Math.round(v * 100)}%`);
@@ -72,6 +72,7 @@ export async function showWards(el: HTMLElement, wardId?: string): Promise<void>
       metric(pct(s.confirmedFixRate), L("fixes confirmed by citizens", "नागरिक-पुष्ट मरम्मत"), ""),
       metric(String(s.reopens), L("reopened after 'fixed'", "'ठीक' के बाद दोबारा खुली"), "", s.reopens ? "warn" : ""),
       metric(s.medianDaysToResolve === null ? "—" : `${s.medianDaysToResolve} d`, L("median days to resolve", "हल होने में औसत दिन"), "")),
+    wardPulse(w.id, civicApi.pulse),
     cats.length ? h("div", { class: "tags" }, ...cats.map(([c, n]) => h("span", { class: "tag" }, `${catLabel(c as never)} ${n}`))) : null,
     h("h2", {}, L("Open issues, most urgent first", "खुली समस्याएँ, सबसे ज़रूरी पहले")),
     h("div", { class: "home-list" }, ...open.map(issueRow)),
