@@ -6,7 +6,7 @@ Every citizen becomes a sensor, every phone a road scanner. Kestrel turns scatte
 
 > Kestrels hover over roadsides and watch everything below. That is the idea: eyes on every street, and nothing reported goes unseen.
 
-**Hackathon:** Build for Bharat
+**Hackathon:** Hack With Delhi 4.0
 
 **Track:** Smarter Cities and Civic Infrastructure (Track 5)
 
@@ -86,6 +86,14 @@ flowchart LR
   S --> V --> R3
 ```
 
+Kestrel has five places, the same on a phone and a laptop:
+
+- **Overview**: the city as a map with one pin per problem, live counts and a ranked list.
+- **Report an issue**: a four-step flow (problem, place, photo and details, review) that takes about ten seconds.
+- **Ward scorecards**: public A to F grades per ward, built only from fixes citizens confirmed.
+- **Safer routes**: a three-step ride planner (where to, how you travel, your route), camera and pocket ride modes.
+- **Officer workspace**: one ranked queue per ward and every action that moves an issue.
+
 Four promises:
 
 1. **One problem, one issue.** Duplicates strengthen an issue instead of burying it.
@@ -116,7 +124,7 @@ flowchart TD
   B -->|Voice| C["Speech recognition<br/>hi-IN / en-IN"]
   B -->|Text| D["Hinglish / Hindi / English text"]
   B -->|Camera| E["On-device model flags<br/>pothole / water"]
-  C --> X["Report drafter<br/>LLM with 2 s breaker, rules fallback"]
+  C --> X["Report drafter<br/>language model, validated · rules fallback"]
   D --> X
   E --> Y["Suggested category + location"]
   X --> Z["We understood: category, place, details<br/>citizen reviews and edits"]
@@ -392,6 +400,8 @@ flowchart TD
   SUG --> HUMAN["Citizen confirms before anything is sent"]
 ```
 
+When the camera flags water and no route around it exists, the ride screen says so plainly ("No route avoids the water reported here. Stop somewhere safe and wait, or turn back.") instead of guiding the rider on. ✅
+
 The camera **suggests**, the citizen **decides**. A camera detection is never stored as evidence by itself, because neither model has been validated on Indian road footage. Detections turn into one-tap report suggestions that a person confirms.
 
 ### Kestrel Vision: one small model that answers many questions
@@ -444,14 +454,14 @@ Kestrel Vision is a 13.7 MB on-device model that looks at a citizen's photo and 
 - the honest evaluation (`evaluate_vision.py`);
 - packaging for the app (`build_vision_heads.py`).
 
-## 14. Built for Bharat
+## 14. Designed for everyday conditions
 
-- **Language.** The interface is in English and Hindi, and reports can be spoken or typed in Hindi, English or Hinglish (*"gaddha"*, *"paani bhara hai"*, *"light nahi jal rahi"*). ✅
+- **Language.** Every screen works in English and Hindi, including the ride planner and its dialogs, and screen-reader labels and input hints switch with it. Reports can be spoken or typed in Hindi, English or Hinglish (*"gaddha"*, *"paani bhara hai"*, *"light nahi jal rahi"*), and typed reports in more Indian languages are understood too (section 25). ✅
 - **Voice.** Input uses the browser's speech recognition. Alerts use neural en-IN and hi-IN voices, with the phone's built-in voice as an instant fallback. ✅
-- **Weak networks.** A durable IndexedDB outbox keeps reports through reloads and offline periods, retries them with the same `eventId`, and sends them one at a time so nothing is duplicated. A service worker caches the app shell. ✅
+- **Weak networks.** A durable IndexedDB outbox keeps reports through reloads and offline periods, retries them with the same `eventId`, and sends them one at a time so nothing is duplicated. Coming back online sends waiting reports at once (it does not wait out a retry back-off), a timer retries after server errors, and the "waiting to send" badge clears as soon as they are delivered. A service worker caches the app shell. ✅
 - **Low-end phones.** There is no front-end framework, just plain TypeScript and Vite. Camera models load only when ride mode starts, and everything works at 360 px width. ✅
 - **First-time users.** Citizens say it or tap one of seven big category tiles, GPS fills in the place, and they send. Touch targets are large, and every state is shown with an icon, text and colour together. ✅
-- **Accessibility.** Status is never shown by colour alone, alerts are spoken, and riders get a pocket mode with a black screen. ✅
+- **Accessibility.** Status is never shown by colour alone, alerts are spoken, riders get a pocket mode with a black screen, and touch targets are at least 44 px. ✅
 - **Sharing.** Every issue has a public link (`#/i/<id>`) that can be shared through the Web Share sheet or WhatsApp. ✅
 
 ## 15. Architecture
@@ -474,12 +484,12 @@ flowchart LR
   CF -->|"/v1/*"| GW["API Gateway HTTP API<br/>throttled"]
 
   GW --> L1["Ingest Lambda<br/>validate · fuse · evaluate"]
-  GW --> L2["Draft Lambda<br/>LLM with 2 s breaker"]
+  GW --> L2["Draft Lambda<br/>language model, rules fallback"]
   GW --> L3["API Lambda<br/>issues · votes · workflow · routes"]
 
   L1 -->|TransactWriteItems| DB[("DynamoDB<br/>issues, reports, timeline")]
   L3 --> DB
-  L2 --> BR["Amazon Bedrock<br/>Nova Lite"]
+  L2 --> BR["Language model provider<br/>(section 25)"]
   L3 --> RT["Google Routes / OSRM"]
   L3 --> WX["Open-Meteo<br/>context only"]
   L3 --> TTS["Neural TTS<br/>en-IN / hi-IN"]
@@ -500,13 +510,13 @@ sequenceDiagram
   autonumber
   participant R as Reporter (PWA)
   participant D as Draft Lambda
-  participant B as Bedrock
+  participant B as Language model
   participant I as Ingest Lambda
   participant T as DynamoDB
   R->>D: POST /v1/report-drafts {"text": "gali mein kooda dher pada hai"}
-  D->>B: Converse (2 s budget)
+  D->>B: one JSON request (time budget)
   B-->>D: category, place words, details
-  D-->>R: draft (method: bedrock | rules + reason)
+  D-->>R: draft (model or rules, with the reason)
   Note over R: "We understood: garbage dump, here" review step
   R->>R: queue in IndexedDB outbox (eventId)
   R->>I: POST /v1/reports (eventId, observedAt, category, location)
@@ -516,9 +526,9 @@ sequenceDiagram
   I-->>R: 201 new issue · 200 joined issue · 200 duplicate retry · 409 reused eventId · 422 invalid
 ```
 
-**LLM guardrails** (carried over from the existing drafter, ✅):
+**LLM guardrails** (✅):
 
-- **2 second circuit breaker.** Slow or failing model calls fall back to deterministic keyword rules. The user never sees a `500`.
+- **Circuit breaker.** Slow, failing or invalid model calls fall back to deterministic keyword rules. The user never sees a `500`.
 - **Untrusted input.** The prompt treats the message as data and ignores instructions inside it.
 - **No invented facts.** Places and depths must be quoted from the original text.
 - **Drafts never change state.** A draft is a suggestion until the citizen reviews and sends it.
@@ -613,6 +623,8 @@ All of these endpoints are implemented and tested. ✅
 
 **Routing and context (public).**
 - `POST /v1/routes/compare` returns a route decision that avoids open hazards in every route-blocking category, with reasons and `avoidedIssues`.
+- `GET /v1/hotspots` and `GET /v1/hazards` return the reviewed underpass hotspots and their current evidence state, and `GET /v1/hotspots/{id}/evidence` returns the "why this route" detail (fresh reports, distinct sources, ages).
+- `POST /v1/observations` records a rider's water report (or "no water") at a hotspot, idempotently, and needs a contributor. `POST /v1/reviews` lets a community reviewer accept newer "no water" reports, and needs a reviewer.
 - `GET /v1/geocode` searches places, `GET /v1/weather` gives rainfall context (never evidence), and `GET /v1/tts?text=&lang=en|hi` returns a neural voice MP3.
 
 **Demo control.** `POST /v1/demo/control` resets the data, moves the demo clock and simulates failures. It needs the demo admin key and exists only in demo mode.
@@ -656,12 +668,12 @@ For UI work with hot reload: `cd app && npm run dev` (Vite proxies `/v1` to the 
 
 **The 2-minute demo** (the local server seeds 39 sample issues across 8 Delhi localities on start):
 
-1. Open `http://127.0.0.1:8787`. The **Issues** tab shows every open issue on the map and ranked by severity.
-2. Tap **Report**, say or type *"Ring Road pe bahut gehra gaddha hai"*. Kestrel picks **Pothole · Deep · Main road**, GPS fills the place, and "Is it one of these?" lists nearby duplicates. Send it.
+1. Open `http://127.0.0.1:8787`. **Overview** shows every open issue on the map and ranked by severity.
+2. Tap **Report an issue**, say or type *"Ring Road pe bahut gehra gaddha hai"*. Kestrel picks **Pothole · Deep · Main road**, GPS fills the place, and "Is it one of these?" lists nearby duplicates. Send it.
 3. On a second phone (or **Demo: act as another citizen**), report the same spot. Both reports fuse into one issue, which becomes **Verified** and rises in priority.
-4. Open **Officer**, pick the ward, select the issue, **Assign**, then **Mark resolved** with a note.
+4. Open **Officer workspace**, pick the ward, select the issue, **Assign**, then **Mark resolved** with a note and an after-photo.
 5. Open the issue page and vote **It's fixed** from two citizens. The issue closes as **citizen-confirmed**, and the ward scorecard counts it. Two **Still there** votes would reopen it instead.
-6. **Ride** shows routing: open manholes, waterlogging, blocked roads and P1 potholes are avoided.
+6. **Safer routes** shows routing: open manholes, waterlogging, blocked roads and P1 potholes are avoided, and the route changes on its own when two other people report water on it.
 
 Reset to the sample data at any time:
 
@@ -732,7 +744,7 @@ DEMO_ADMIN_KEY=<same key> python ../scripts/demo.py --api <AppUrl> smoke
 
 **HTTP smoke test: `python scripts/demo.py --api <url> smoke`** runs the golden journey over HTTP: idempotency, `409`, corroboration, the route switch, concurrent writes, rejection of anonymous writes, stale evidence and provider failure. It passes against a deployed stack. ✅
 
-**Browser end-to-end: `node scripts/e2e-browser.mjs <out-dir>`** drives headless Chrome with a fake camera and GPS at 360 px through report, review, submit, corroboration, the route switch, the evidence drawer, Hindi, the offline queue and ride mode. It passes locally. ✅
+**Browser end-to-end: `node scripts/e2e-browser.mjs <out-dir>`** drives headless Chrome with a fake camera and GPS at 360 px through report, review, submit, corroboration, the route switch, the evidence drawer, Hindi, the offline queue and ride mode. All 45 checks pass locally. ✅
 
 **Mutation checks.** Loosening the clear threshold, the fusion radius, the reopen rule or the community cap each makes the civic suite fail, which proves the tests guard those rules. ✅
 
@@ -754,7 +766,7 @@ See [.env.example](.env.example). Secrets live only on the server. The browser r
 **Cloud-only server settings:**
 - `TABLE_NAME` switches storage to DynamoDB when set and to the in-process store when unset.
 - `BEDROCK_MODEL_ID` selects the LLM for report drafts; when empty, drafting uses rules only.
-- `COVEXCODE_API_KEYS` (or a single `COVEXCODE_API_KEY`), `COVEXCODE_ENDPOINT` and `COVEXCODE_MODEL` enable report understanding, officer briefs and the ward pulse (section 25); calls rotate across the keys. When empty, Kestrel uses its keyword rules and hides the AI cards.
+- The language-model settings are listed in section 25.
 
 **Build-time settings:**
 - `VITE_API_BASE` sets the API origin; empty means same origin.
@@ -819,13 +831,15 @@ Civic layer: `backend/src/domain/{categories,evidence,fusion,severity,lifecycle}
 - Routing that avoids every route-blocking category, with side-step detours
 - 39 realistic sample issues across 8 Delhi localities, built through the real pipeline
 - New Kestrel design system and logo; Hindi and English throughout the civic app
+- Redesigned interface: an Overview dashboard, a four-step report flow, a three-step ride planner and an Officer workspace, in English and Hindi on every screen (including screen-reader labels), with 44 px touch targets
+- Hardening found while testing the real app: the officer's after-photo upload, the ride planner's route card that was drawn under the map, offline reports that could wait for the next trigger after reconnecting, a "waiting to send" badge that lagged behind delivery, and an honest ride message when no route avoids water
 - Kestrel Vision (section 13): a 13.7 MB on-device model distilled from two MIT-licensed CLIP models. It suggests the category, rejects junk photos, hints at pothole size, nudges on privacy, matches duplicate photos and checks officers' after-photos, measured on hand-verified photos it never saw
 
 ```mermaid
 flowchart LR
   P1["1. Rename + clean"] --> P2["2. civic-policy-v1"] --> P3["3. Fusion anywhere"] --> P4["4. Votes + severity"]
   P4 --> P5["5. Lifecycle + issue page"] --> P6["6. Officer console + scorecards"] --> P7["7. Routing for all hazards"]
-  P7 --> P8["8. Seed data"] --> P9["9. New UI + logo"] --> P10["10. Deploy + demo video"]
+  P7 --> P8["8. Seed data"] --> P9["9. New UI + logo"] --> P10["10. Kestrel Vision"] --> P11["11. Redesign + hardening"] --> P12["12. Language layer"] --> P13["13. Deploy + demo video"]
 ```
 
 ### After the hackathon 🧭
@@ -835,7 +849,7 @@ flowchart LR
 - A multi-class road *detection* model for ride mode trained on Indian data (pothole, waterlogging, stalled vehicle, blockage), with dataset licences checked first
 - Splitting a wrong merge, bulk triage, geohash-partitioned storage for city scale
 - Export to existing municipal grievance systems so officers do not use two tools
-- More regional languages for reporting and voice
+- Voice input and the interface in more regional languages
 - Open data feed of anonymised, aggregated issues for researchers and journalists
 
 ### Known limits
@@ -847,25 +861,69 @@ flowchart LR
 
 ## 25. How we used Covexcode
 
-The hackathon gave each team member Covexcode credits (`deepseek-v4-flash`, an OpenAI-compatible endpoint). We used them where a language model genuinely makes Kestrel better, wrapped in the same rule we apply to every model in this project: **the model suggests, Kestrel validates, and a deterministic fallback always exists.** All calls rotate round-robin across the three team keys, which live only in the git-ignored `.env` (see `.env.example`).
+The hackathon gave each team member Covexcode credits: `deepseek-v4-flash` behind an OpenAI-compatible endpoint. Everything Kestrel does with a language model goes through it, and it is all described here. One rule applies throughout, the same one we use for every model in this project: **the model suggests, Kestrel validates, and a deterministic fallback always exists.**
 
-**1. Understanding what citizens write.** `POST /v1/report-drafts` now sends the citizen's words, in any language, typed or spoken, to Covexcode (`backend/src/providers/covexcode.py`). It returns the category, the details the citizen claimed, the place they named, and a one-line English and Hindi summary that is shown back to them ("We understood: …"). The answer is untrusted: the category and details must come from Kestrel's own lists, the place must appear word for word in the citizen's text, and instructions hidden in a report are ignored. If the model is slow (12 s budget), down or returns anything invalid, the keyword rules answer instead and the report flow never breaks. Identical text is never billed twice.
+### What it does in the app
 
-**2. Officer briefs.** In the ward officer console, every issue now carries an AI brief (`GET /v1/issues/{id}/brief`, officer-only): all the citizen descriptions of that problem condensed into two or three sentences in English and Hindi, noting risks citizens mentioned and how consistent the reports are. It is labelled as a summary of claims, cached per issue revision, and never shown publicly.
+**1. Understanding what citizens write.** `POST /v1/report-drafts` sends the citizen's words, typed or spoken, to Covexcode. It returns the category, the details the citizen claimed, the place they named, and a one-line summary in English and Hindi that is shown back to them under "We understood: …". This works in English, Hindi and Hinglish, and also for typed reports in Bengali, Tamil, Marathi, Punjabi and Urdu, so a resident can report in their own language and the ward officer still reads it in English or Hindi.
 
-**3. Ward pulse.** Every public ward page and the officer console show a short "ward pulse" (`GET /v1/wards/{id}/pulse`): the most urgent places, what is overdue and how the ward is doing on citizen-confirmed fixes, in English and Hindi. It is written from structured data only (categories, places, priorities, deadlines, the scorecard), so no citizen's free text ever reaches a public summary.
+**2. Officer briefs.** In the Officer workspace, every issue carries an AI brief (`GET /v1/issues/{id}/brief`, officer-only). It condenses all the citizen descriptions of that problem into two or three sentences in English and Hindi, noting the risks citizens mentioned and how consistent the reports are. It is labelled as a summary of claims and cached per issue revision.
 
-**4. Measuring it honestly.** `ml/eval_report_understanding.py` builds a test set from a fixed grid of 6 categories × 4 writing styles (formal, angry, voice transcript, very short) × 8 languages. Covexcode writes the messages, but each label is the grid cell we asked for, never the model's opinion, and the writer is told not to always name the problem outright. Then the old keyword rules and Covexcode both read every message:
+**3. Ward pulse.** Every public ward page and the Officer workspace show a short "ward pulse" (`GET /v1/wards/{id}/pulse`): the most urgent places, what is overdue and how the ward is doing on citizen-confirmed fixes, in English and Hindi. It is written from structured data only (categories, places, priorities, deadlines and the scorecard), so no citizen's own words ever reach a public summary.
 
-- On **1,428 English, Hindi and Hinglish reports**, the keyword rules were right 51.6% of the time and gave no answer for 36%. Covexcode was right 83.9% with our first prompt. We then added a one-line definition of each category (its weak spot was formal descriptions of a "crumbled" or "sunken" road), which took it to **92.6%**, with every language above 91%. That second number was tuned on this set, so we checked it elsewhere:
-- On **2,329 reports in Bengali, Tamil, Marathi, Punjabi and Urdu**, which the prompt change was never tuned on, the keyword rules manage 3.3% and Covexcode went from 83.8% to **89.7%** (87% to 92% per language). So a resident can report in their own language and the ward officer still reads it in English or Hindi.
-- Median model latency is about 4 seconds, which is why the app shows "Reading your report…" and keeps the rules as a fallback.
+**4. Hindi on every screen.** All 292 Hindi strings in the app were sent to Covexcode, with their English, as a reviewer (`scripts/review_hindi.py`). It flagged 75 real problems, for example:
+- sentences that dropped half their meaning;
+- "पहचान" (identity) used for "landmark", and "औसत" (average) used for "median";
+- a Hindi example describing garbage next to an English one describing a pothole;
+- grammar slips.
 
-The same model family writes and reads these messages, so the model's numbers are likely optimistic. The rules' numbers are a fair floor. Everything is in `ml/understanding_eval*.json`, with the messages in `ml/understanding_set*.jsonl`.
+We applied 74 after review and rejected one that would have added a safety claim (`scripts/apply_hindi_review.py`). Any suggestion that changed a placeholder or a number was dropped automatically. Covexcode also drafted Hindi for about 115 ride-planner strings that had none, including dialogs, step headings, buttons, screen-reader labels and input hints, which we reviewed and aligned with the app's existing terms. A fluent-speaker review is still planned before a pilot.
 
-**5. Teaching the offline rules.** The keyword rules are what runs with no network. `ml/mine_rule_words.py` showed Covexcode the messages the rules missed and asked for words people actually used. A word was kept only if it fired on at least three messages and was right at least 95% of the time on one half of the data, and we reviewed the list by hand (126 words kept, 12 ambiguous ones dropped). On the other, untouched half, the offline rules went from **21.7% to 36.8%**, and for the first time they read some Bengali, Tamil, Marathi, Punjabi and Urdu reports with no network at all (`ml/rule_words.json`).
+### Safeguards
 
-In total the evaluation, prompt tuning and vocabulary mining used roughly 10 million tokens, split evenly across the three team keys. The tests in `backend/tests/test_covexcode.py` run without the network: they check the validation, the fallback, the cache, that briefs are officer-only and that the ward pulse never sees citizen text.
+- **Answers are checked, not trusted.** Categories and details must come from Kestrel's own lists. A place must appear word for word in the citizen's text, or it is dropped. Instructions hidden inside a report are ignored. Briefs say "citizens report", never "verified".
+- **Always a fallback.** A call that is slow (12 s budget), failing or invalid returns nothing, and the keyword rules answer instead. The report flow never breaks, the app shows "Reading your report…" while it waits, and the AI cards simply do not appear.
+- **No double billing.** Identical text is answered from a cache, and briefs and pulses are cached per issue revision or ward snapshot.
+- **One provider file.** `backend/src/providers/covexcode.py` is the only code that talks to the model, so the domain core and every screen work without it.
+
+### Privacy
+
+Report text goes to Covexcode to be understood, and issue descriptions go to it for officer briefs, which only officers can read. The public ward pulse uses structured data only. API keys live only on the server: in the git-ignored `.env` locally, and as a `NoEcho` stack parameter in AWS.
+
+### Setup
+
+- **Local.** Copy [.env.example](.env.example) to `.env` and set `COVEXCODE_ENDPOINT`, `COVEXCODE_MODEL`, and either `COVEXCODE_API_KEYS=key1,key2,key3` (calls rotate across the keys) or a single `COVEXCODE_API_KEY`. `local_server.py` reads it on start. Without keys, Kestrel runs on keyword rules and hides the AI cards.
+- **AWS.** Add `CovexcodeApiKey=<key>` to the `--parameter-overrides` of `sam deploy`; the template sets `COVEXCODE_API_KEY` and `COVEXCODE_MODEL` on the API and draft functions.
+- **Team keys.** Every call, in the app and in the evaluation scripts, goes to the next team key in turn, so usage is spread evenly across all three of us.
+
+### Measuring it honestly
+
+`ml/eval_report_understanding.py` builds a test set from a fixed grid of 6 categories × 4 writing styles (formal, angry, voice transcript, very short) × 8 languages. Covexcode writes the messages, but each label is the grid cell we asked for, never the model's opinion, and the writer is told not to always name the problem outright. Then the old keyword rules and Covexcode both read every message:
+
+- **English, Hindi and Hinglish (1,428 reports).** The keyword rules were right 51.6% of the time and gave no answer for 36%. Covexcode was right 83.9% with our first prompt. We then added a one-line definition of each category (its weak spot was formal descriptions of a "crumbled" or "sunken" road), which took it to **92.6%**, with every language above 91%. That second number was tuned on this set, so we checked it elsewhere.
+- **Bengali, Tamil, Marathi, Punjabi and Urdu (2,329 reports).** The prompt change was never tuned on these. The keyword rules manage 3.3%, and Covexcode went from 83.8% to **89.7%** (87% to 92% per language).
+- **Latency.** The median call takes about 4 seconds.
+
+The same model family writes and reads these messages, so the model's numbers are likely optimistic; the rules' numbers are a fair floor. Everything is in `ml/understanding_eval*.json`, with the messages in `ml/understanding_set*.jsonl`.
+
+### Teaching the offline rules
+
+The keyword rules are what runs with no network. `ml/mine_rule_words.py` showed Covexcode the messages the rules missed and asked for the words people actually used.
+
+- **Filter.** A word was kept only if it fired on at least three messages and was right at least 95% of the time on one half of the data.
+- **Review.** We checked the list by hand: 126 words kept, 12 ambiguous ones dropped.
+- **Result.** On the other, untouched half, the offline rules went from **21.7% to 36.8%**. For the first time they read some Bengali, Tamil, Marathi, Punjabi and Urdu reports with no network at all (`ml/rule_words.json`).
+
+### Tests and usage
+
+`backend/tests/test_covexcode.py` runs without the network. It checks:
+- the validation;
+- the fallback on a timeout or a missing key;
+- the cache;
+- that briefs are officer-only;
+- that the ward pulse never sees citizen text.
+
+In total the evaluation, prompt tuning, vocabulary mining and Hindi review used roughly 10 million tokens, split evenly across the three team keys.
 
 ## 26. Value and adoption
 
@@ -899,7 +957,7 @@ flowchart LR
 
 **Value and impact (20%).** Officers get fewer and better tickets, wards get public scorecards, reporters get a direct personal benefit, and there is a clear pilot path ([section 26](#26-value-and-adoption)).
 
-**User experience (10%).** Voice works in Hindi, English and Hinglish, reports survive offline, layouts work at 360 px, no state relies on colour alone, and alerts are spoken ([section 14](#14-built-for-bharat)).
+**User experience (10%).** Voice works in Hindi, English and Hinglish, reports survive offline, layouts work at 360 px, no state relies on colour alone, and alerts are spoken ([section 14](#14-designed-for-everyday-conditions)).
 
 ---
 
