@@ -585,3 +585,9 @@
 .civic .primary, .filter-chip[aria-pressed='true'], .mic,
 .cat-tile[aria-pressed='true'], .cat-tile[aria-pressed='true'] svg,
 .toast:not(.toast-error):not(.toast-warn) { color: #f6e9d9; }
+
+/* Covexcode: AI summary under the report hint, AI brief in the officer console */
+.understood { white-space: pre-line; }
+.ai-brief { margin: .75rem 0; padding: .8rem 1rem; border-radius: var(--k-radius); background: var(--k-surface-2, rgba(11,123,122,.06)); border: 1px solid var(--k-line); }
+.ai-brief-head { margin: 0 0 .35rem; }
+.ai-brief p { margin: .25rem 0; }
